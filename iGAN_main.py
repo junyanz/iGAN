@@ -12,7 +12,7 @@ def parse_args():
     parser.add_argument('--model_name', dest='model_name', help='the model name', default='outdoor_64', type=str)
     parser.add_argument('--model_type', dest='model_type', help='the generative models and its deep learning framework', default='dcgan_theano', type=str)
     parser.add_argument('--framework', dest='framework', help='deep learning framework', default='theano')
-    parser.add_argument('--win_size', dest='win_size', help='the size of the main window', type=int, default=320)
+    parser.add_argument('--win_size', dest='win_size', help='the size of the main window', type=int, default=384)
     parser.add_argument('--batch_size', dest='batch_size', help='the number of random initializations', type=int, default=64)
     parser.add_argument('--n_iters', dest='n_iters', help='the number of total optimization iterations', type=int, default=40)
     parser.add_argument('--top_k', dest='top_k', help='the number of the thumbnail results being displayed', type=int, default=16)
@@ -26,7 +26,7 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    if not args.model_file:  #if model directory is not specified
+    if not args.model_file:  #if the model_file is not specified
         args.model_file = './models/%s.%s' % (args.model_name, args.model_type)
 
     for arg in vars(args):

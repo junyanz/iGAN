@@ -51,7 +51,7 @@ def print_var(x):
 
 
 def interp_z(z0, z1, ratio, interp='linear'):
-    print 'interp = %s' % interp
+    # print 'interp = %s' % interp
     if interp == 'linear':
         z_t = (1 - ratio) * z0 + ratio * z1
 

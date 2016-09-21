@@ -6,18 +6,16 @@ import time
 
 class GUIDesign(QWidget):
     def __init__(self, opt_engine, batch_size=32, n_iters=25, win_size=320, topK=16):
-        # drawing the layout
+        # draw the layout
         QWidget.__init__(self)
         morph_steps = 16
         self.opt_engine = opt_engine
         self.drawWidget = gui_draw.GUIDraw(opt_engine, batch_size=batch_size, n_iters=n_iters, nps=win_size, topK=topK)
         self.drawWidget.setFixedSize(win_size, win_size)
         vbox = QVBoxLayout()
-        # vbox.setTitle('Drawing Pad')
 
         self.drawWidgetBox = QGroupBox()
         self.drawWidgetBox.setTitle('Drawing Pad')
-        # vbox.addWidget(self.drawWidget)
         vbox_t = QVBoxLayout()
         vbox_t.addWidget(self.drawWidget)
         self.drawWidgetBox.setLayout(vbox_t)
@@ -65,8 +63,7 @@ class GUIDesign(QWidget):
         vbox_t.addWidget(self.visWidget)
         self.visWidgetBox.setLayout(vbox_t)
         vbox2 = QVBoxLayout()
-        # vbox2.se('Multiple Modes')
-        # hbox.addStretch(1)
+
         vbox2.addWidget(self.visWidgetBox)
         vbox2.addStretch(1)
 
@@ -85,8 +82,12 @@ class GUIDesign(QWidget):
 
         hbox.addLayout(vbox2)
         self.setLayout(hbox)
-        self.setGeometry(0, 0, self.visWidget.winWidth + win_size + 40, self.visWidget.winHeight + 60)
-
+        mainWidth = self.visWidget.winWidth + win_size + 60
+        mainHeight = self.visWidget.winHeight + 100
+        self.setGeometry(0, 0, mainWidth, mainHeight)
+        # print 'mainWidth = %d, mainHeight = %d' % (mainWidth, mainHeight)
+        # print 'width = %d, height = %d' % (self.width(), self.height())
+        self.setFixedSize(self.width(), self.height()) # fix window size
         self.connect(self.opt_engine, SIGNAL('update_image'), self.drawWidget.update_im)
         self.connect(self.opt_engine, SIGNAL('update_image'), self.visWidget.update_vis)
         self.connect(self.visWidget, SIGNAL('update_image_id'), self.drawWidget.set_image_id)
@@ -137,10 +138,15 @@ class GUIDesign(QWidget):
             self.close()
 
         if event.key() == Qt.Key_E:
+            isChecked = self.bEdit.isChecked()
+            if isChecked:
+                self.bEdit.setChecked(False)
+            else:
+                self.bEdit.setChecked(True)
             self.show_edits()
 
-        if event.key() == Qt.Key_G:
-            self.opt_engine.update_show_real()
+        if event.key() == Qt.Key_P:
+            self.play()
 
         if event.key() == Qt.Key_S:
             self.save()

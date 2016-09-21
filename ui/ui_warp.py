@@ -40,9 +40,9 @@ class UIWarp():
         self.activeId = len(self.points1) - 1
         print('set active id =%d'%self.activeId)
 
-    def ActivePoint(self):
-        pnt = self.points2[self.activeId]
-        return (pnt[0]* self.scale, pnt[1]*self.scale)
+    # def ActivePoint(self):
+    #     pnt = self.points2[self.activeId]
+    #     return (pnt[0]* self.scale, pnt[1]*self.scale)
 
     def StartPoint(self):
         print 'start point, activeId', self.activeId

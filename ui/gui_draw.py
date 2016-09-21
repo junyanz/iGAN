@@ -8,7 +8,6 @@ from ui_recorder import UIRecorder
 from ui_color import UIColor
 from ui_sketch import UISketch
 from ui_warp import UIWarp
-# from backend import model_config
 
 class GUIDraw(QWidget):
     def __init__(self, opt_engine, batch_size=32, n_iters=25, nps=320, topK=16, hash=None, hash_z=None):
@@ -23,7 +22,7 @@ class GUIDraw(QWidget):
         npx = opt_engine.npx
         self.pos = None
         self.nps = nps
-        self.scale = nps / npx
+        self.scale = nps / float(npx)
         self.brushWidth = int(2 * self.scale)
         self.show_nn = True
         self.type = 'color'
@@ -94,19 +93,19 @@ class GUIDraw(QWidget):
 
     def round_point(self, pnt):
         # print(type(pnt))
-        x = np.round(pnt.x() / self.scale) * self.scale
-        y = np.round(pnt.y() / self.scale) * self.scale
+        x = int(np.round(pnt.x()))
+        y = int(np.round(pnt.y()))
         return QPoint(x, y)
-
-    def update_beta(self, step):
-        beta_r = self.model[-1]
-        value = beta_r.get_value()
-        print('<before> beta=%5.5f' % beta_r.get_value())
-        value *= step
-        beta_r.set_value(value)
-        print('<after> beta=%5.5f' % beta_r.get_value())
-        # self.generate()
-        self.update()
+    #
+    # def update_beta(self, step):
+    #     beta_r = self.model[-1]
+    #     value = beta_r.get_value()
+    #     print('<before> beta=%5.5f' % beta_r.get_value())
+    #     value *= step
+    #     beta_r.set_value(value)
+    #     print('<after> beta=%5.5f' % beta_r.get_value())
+    #     # self.generate()
+    #     self.update()
 
     def get_image_id(self):
         return self.image_id
@@ -119,10 +118,6 @@ class GUIDraw(QWidget):
         return self.opt_engine.get_z(self.get_image_id(), self.get_frame_id())
 
     def paintEvent(self, event):
-        # print('paintEvent')
-        # print('update paint %d'%self.frame_id)
-        # self.paint_im = QImage(self.nps, self.nps, QImage.Format_RGB888)
-
         painter = QPainter()
         painter.begin(self)
         painter.fillRect(event.rect(), Qt.white)
@@ -185,10 +180,7 @@ class GUIDraw(QWidget):
 
         if self.show_ui:
             self.uir.draw(painter)
-        # self.update_msg(painter)
-        # self.visNN.show_results()
         painter.end()
-        # self.paint_im.save('/tmp/screenshot.png')
 
     def update_msg(self, painter):
         # msgs = []

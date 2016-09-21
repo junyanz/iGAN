@@ -11,11 +11,11 @@ In European Conference on Computer Vision (ECCV) 2016
 <img src='pics/demo_teaser.jpg' width=800>
 
 
-Given a few user brushes, our system could generate photo-realistic samples that best satisfy the user edits at real-time. The interface is based on deep generative model such as Generative Adversarial Networks ([GAN](https://arxiv.org/abs/1406.2661)). The system serves two main purposes:
+Given a few user brushes, our system could generate photo-realistic samples that best satisfy the user edits at real-time. Our system is based on deep generative models such as Generative Adversarial Networks ([GAN](https://arxiv.org/abs/1406.2661)). The system serves the following two main purposes:
 * An intelligent drawing interface for automatically generating images inspired by the color and shape of the digital brush strokes.
-* An interactive visual debugging tool for understanding and visualizing deep generative models. By interacting with the deep generative models, a developer can understand which kinds of stuff that the model can produce or not.
+* An interactive visual debugging tool for understanding and visualizing deep generative models. By interacting with the deep generative models, a developer can understand which kinds of stuff the model can produce, as well as the limitation of the model.
 
-We are working on supporting more generative models (e.g. VAE) under more deep learning frameworks (e.g. Tensorflow).  Please cite our paper if you find this code useful in your research.
+We are working on supporting more generative models (e.g. variational autoencoder) and more deep learning frameworks (e.g. Tensorflow).  Please cite our paper if you find this code useful in your research.
 
 
 ## Getting started
@@ -56,10 +56,10 @@ sudo pip install qdarkstyle
 sudo pip install dominate
 ```
 * GPU + CUDA + CUDNN:
-The code is tested on GTX Titan X + CUDA 7.5 + CUDNN 5.1.  Here are the tutorials on how to install [CUDA](http://www.r-tutor.com/gpu-computing/cuda-installation/cuda7.5-ubuntu) and [CUDNN](http://askubuntu.com/questions/767269/how-can-i-install-cudnn-on-ubuntu-16-04). A decent GPU is required to run the system at near real-time. If you run the program on a gpu server, you need to use a remote desktop software (e.g. VNC).
+The code is tested on GTX Titan X + CUDA 7.5 + CUDNN 5.1.  Here are the tutorials on how to install [CUDA](http://www.r-tutor.com/gpu-computing/cuda-installation/cuda7.5-ubuntu) and [CUDNN](http://askubuntu.com/questions/767269/how-can-i-install-cudnn-on-ubuntu-16-04). A decent GPU is required to run the system at real-time. [**Warning**] If you run the program on a gpu server, you need to use a remote desktop software (e.g. VNC), which may introduce display artifacts and latency problem.
 
 ## Pre-trained models:
-Download the theano [DCGAN](https://github.com/Newmu/dcgan_code) model (e.g. outdoor_64). Before using our system ,please check out the random real images vs. DCGAN generated samples to see which kinds of images that a model can produce.
+Download the theano DCGAN model (e.g. outdoor_64.dcgan_theano). Before using our system, please check out the random real images vs. DCGAN generated samples to see which kinds of images that a model can produce.
 
 ``` bash
 bash ./models/scripts/download_dcgan_model.sh outdoor_64.dcgan_theano
@@ -69,7 +69,7 @@ bash ./models/scripts/download_dcgan_model.sh outdoor_64.dcgan_theano
 * [shoes_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/shoes_64.dcgan_theano) (64x64): trained on 50K shoes images collected by [Yu and Grauman](http://vision.cs.utexas.edu/projects/finegrained/utzap50k/). [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_dcgan.png)]
 * [handbag_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/handbag_64.dcgan_theano) (64x64): trained on 137K handbag images downloaded from Amazon. [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_dcgan.png)]
 
-We also provide a script to generate sample images from the dcgan model.
+We also provide a script to generate sampleS from a pre-trained dcgan model.
 ```bash
 THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python generate_samples.py --model_name outdoor_64 --output_image outdoor_64_dcgan.png
 ```
@@ -84,13 +84,13 @@ See [[Youtube Video]](https://youtu.be/9c4z6YsBGQ0?t=2m18s) at 2:18s for the int
 * Candidate Results: a display showing thumbnails of all the candidate results (e.g. different modes) that fits the user edits. A user can click a mode (highlighted by a green rectangle), and the drawing pad will show this result.
 * Brush Tools:  `Coloring Brush` for changing the color of a specific region; `Sketching brush` for outlining the shape. `Warping brush` for modifying the shape more explicitly.
 * Slider Bar: drag the slider bar to explore the interpolation sequence between the initial result (i.e. random generated image) and the current result (e.g. image that satisfies the user edits).
-* Control Panel: `Play`: play the interpolation sequence; `Fix`: fix  `Restart`: restart the system; `Save`: save the result to a folder. `Edits`: Check the box if you would like to show edits on top of generated image.
+* Control Panel: `Play`: play the interpolation sequence; `Fix`: use the current result as additional constrains for further editing  `Restart`: restart the system; `Save`: save the result to a html webpage. `Edits`: Check the box if you would like to show edits on top of the generated image.
 
 
 #### User interaction
 * Coloring Brush:  right click to select the color; hold left click to paint; scroll the mouse wheel to adjust the width of the brush.
 * Sketching Brush: hold left click to sketch the shape.
-* Warping Brush: We recommend you first use coloring and sketching before the warping tools. Right click to select the a square region; hold left click to drag the region; scroll the mouse wheel to adjust the size of the square region.
+* Warping Brush: We recommend you first use coloring and sketching before the warping brush. Right click to select the a square region; hold left click to drag the region; scroll the mouse wheel to adjust the size of the square region.
 * Shortcuts: P for `Play`, F for `Fix`, R for `Restart`; S for `Save`; E for `Edits`; Q for quiting  the program
 
 ## Command line arguments:
@@ -101,15 +101,16 @@ Type `python iGAN_main.py --help` for a complete list of the arguments. Here we 
 * `--top_k`: the number of the candidate results being displayed
 
 
-## Plugging in you own data and models
-* DCGAN_theano model on new datasets: we will provide a model training script soon (by Sep 25 2016). The script can train a model (e.g. cat.dcgan_theano) given a new photo collection. (e.g. cat_photos/)
-* New deepgenerative models based on Theano (e.g. VAE：variational autoencoder): The current design of our package follows: ui python class (e.g. `ui_draw.py`) => constrained optimization python class (`constrained_opt_theano.py`) => deep generative model python class (e.g. `dcgan_theano.py`). To incorporate your own generative model, you need to create a new python class (e.g. `vae_theano.py`) under `model_def` folder with the same interface of `dcgan_theano.py`, and specify `--model_type vae_theano` in the command line.
-* Generative models based on another deep learning framework (e.g. Tensorflow): we are working on a tensorflow based optimization class (e.g. `constrained_opt_tensorflow.py`) now. Once the code is released, you can create your own tensorflow model class (e.g. `dcgan_tensorflow.py`.)
+## Try your own data and models
+* DCGAN_theano model on new datasets: we will provide a model training script soon (by Sep 25 2016). The script can train a model (e.g. cat_64.dcgan_theano) given a new photo collection. (e.g. cat_photos/)
+* New deep generative models based on Theano (e.g. VAE：variational autoencoder): The current design of our software follows: ui python class (e.g. `gui_draw.py`) => constrained optimization python class (`constrained_opt_theano.py`) => deep generative model python class (e.g. `dcgan_theano.py`). To incorporate your own generative model, you need to create a new python class (e.g. `vae_theano.py`) under `model_def` folder with the same interface of `dcgan_theano.py`, and specify `--model_type vae_theano` in the command line.
+* Generative models based on another deep learning framework (e.g. Tensorflow): we are working on a tensorflow based optimization class (i.e. `constrained_opt_tensorflow.py`) now. Once the code is released, you can create your own tensorflow model class (e.g. `dcgan_tensorflow.py`) under `model_def` folder.
 
 ## TODO
 * Support Python3
+* Add 128x128 models
 * Provide our dcgan model training scripts.  
-* Support Tensorflow GAN models.
+* Support other deep learning frameworks (e.g. Tensorflow).
 * Support other deep generative models (e.g. variational autoencoder)
 * Support sketch models for sketching guidance, inspired by [ShadowDraw](http://vision.cs.utexas.edu/projects/shadowdraw/shadowdraw.html).
 * Support the average image mode for visual data exploration, inspired by [AverageExplorer](https://people.eecs.berkeley.edu/~junyanz/projects/averageExplorer/).
