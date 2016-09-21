@@ -36,7 +36,7 @@ The code is written in Python2 and requires the following 3rd party libraries:
 * numpy
 * [OpenCV](http://opencv.org/)
 ```bash
-sudo apt-get install libopencv-dev
+sudo apt-get install python-opencv
 ```
 * As an alternative to opencv, you can install scikit-image
 ```bash
