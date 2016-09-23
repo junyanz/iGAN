@@ -2,8 +2,10 @@
 [[Project]](http://www.eecs.berkeley.edu/~junyanz/projects/gvm/) [[Youtube]](https://youtu.be/9c4z6YsBGQ0)  
 Contact: Jun-Yan Zhu (junyanz at eecs dot berkeley dot edu)
 
+<img src='pics/demo.gif' width=320>
+
 ## Overview
-iGAN (aka. interactive GAN) is the authors' implementation of interactive image generation interface described in:  
+iGAN (aka. interactive GAN) is the author's implementation of interactive image generation interface described in:  
 "Generative Visual Manipulation on the Natural Image Manifold"   
 [Jun-Yan Zhu](https://people.eecs.berkeley.edu/~junyanz/), [Philipp Krähenbühl](http://www.philkr.net/), [Eli Shechtman](https://research.adobe.com/person/eli-shechtman/), [Alexei A. Efros](https://people.eecs.berkeley.edu/~efros/)    
 In European Conference on Computer Vision (ECCV) 2016
@@ -15,7 +17,7 @@ Given a few user strokes, our system could produce photo-realistic samples that 
 * An intelligent drawing interface for automatically generating images inspired by the color and shape of the brush strokes.
 * An interactive visual debugging tool for understanding and visualizing deep generative models. By interacting with the  generative model, a developer can understand what visual content the model can produce, as well as the limitation of the model.
 
-We are working on supporting more generative models (e.g. variational autoencoder) and more deep learning frameworks (e.g. Tensorflow).  Please cite our paper if you find this code useful in your research.
+We are working on supporting more generative models (e.g. variational autoencoder) and more deep learning frameworks (e.g. Tensorflow). You are welcome to propose new changes or contribute new features (e.g. Tensorflow branch) via pull requests. Please cite our paper if you find this code useful in your research.
 
 
 ## Getting started
@@ -59,8 +61,8 @@ sudo pip install qdarkstyle
 ```bash
 sudo pip install dominate
 ```
-* GPU + CUDA + CUDNN:
-The code is tested on GTX Titan X + CUDA 7.5 + cuDNN 5.  Here are the tutorials on how to install [CUDA](http://www.r-tutor.com/gpu-computing/cuda-installation/cuda7.5-ubuntu) and [CUDNN](http://askubuntu.com/questions/767269/how-can-i-install-cudnn-on-ubuntu-16-04). A decent GPU is required to run the system at real-time. [**Warning**] If you run the program on a gpu server, you need to use a remote desktop software (e.g. VNC), which may introduce display artifacts and latency problem.
+* GPU + CUDA + cuDNN:
+The code is tested on GTX Titan X + CUDA 7.5 + cuDNN 5.  Here are the tutorials on how to install [CUDA](http://www.r-tutor.com/gpu-computing/cuda-installation/cuda7.5-ubuntu) and [cuDNN](http://askubuntu.com/questions/767269/how-can-i-install-cudnn-on-ubuntu-16-04). A decent GPU is required to run the system at real-time. [**Warning**] If you run the program on a gpu server, you need to use a remote desktop software (e.g. VNC), which may introduce display artifacts and latency problem.
 
 ## Pre-trained models:
 Download the theano DCGAN model (e.g. outdoor_64.dcgan_theano). Before using our system, please check out the random real images vs. DCGAN generated samples to see which kind of images that a model can produce.
@@ -88,14 +90,14 @@ See [[Youtube]](https://youtu.be/9c4z6YsBGQ0?t=2m18s) at 2:18s for the interacti
 * Candidate Results: a display showing thumbnails of all the candidate results (e.g. different modes) that fits the user edits. A user can click a mode (highlighted by a green rectangle), and the drawing pad will show this result.
 * Brush Tools:  `Coloring Brush` for changing the color of a specific region; `Sketching brush` for outlining the shape. `Warping brush` for modifying the shape more explicitly.
 * Slider Bar: drag the slider bar to explore the interpolation sequence between the initial result (i.e. random generated image) and the current result (e.g. image that satisfies the user edits).
-* Control Panel: `Play`: play the interpolation sequence; `Fix`: use the current result as additional constrains for further editing  `Restart`: restart the system; `Save`: save the result to a webpage. `Edits`: Check the box if you would like to show the edits on top of the generated image.
+* Control Panel: `Play`: play the interpolation sequence; `Fix`: use the current result as additional constraints for further editing  `Restart`: restart the system; `Save`: save the result to a webpage. `Edits`: Check the box if you would like to show the edits on top of the generated image.
 
 
 #### User interaction
 * `Coloring Brush`:  right click to select a color; hold left click to paint; scroll the mouse wheel to adjust the width of the brush.
 * `Sketching Brush`: hold left click to sketch the shape.
 * `Warping Brush`: We recommend you first use coloring and sketching before the warping brush. Right click to select a square region; hold left click to drag the region; scroll the mouse wheel to adjust the size of the square region.
-* Shortcuts: P for `Play`, F for `Fix`, R for `Restart`; S for `Save`; E for `Edits`; Q for quiting the program.
+* Shortcuts: P for `Play`, F for `Fix`, R for `Restart`; S for `Save`; E for `Edits`; Q for quitting the program.
 * Tooltips: when you move the cursor over a button , the system will display the tooltip of the button.
 
 ## Command line arguments:
@@ -114,12 +116,14 @@ Type `python iGAN_main.py --help` for a complete list of the arguments. Here we 
 ## TODO
 * Support Python3.
 * Add 128x128 models.
-* Provide our dcgan model training scripts.  
+* Add the DCGAN model training script.  
+* Add the script for projecting an image to the latent vector `z`.
 * Support other deep learning frameworks (e.g. Tensorflow).
 * Support other deep generative models (e.g. variational autoencoder).
 * Support sketch models for sketching guidance, inspired by [ShadowDraw](http://vision.cs.utexas.edu/projects/shadowdraw/shadowdraw.html).
-* Support the average image mode for visual data exploration, inspired by [AverageExplorer](https://people.eecs.berkeley.edu/~junyanz/projects/averageExplorer/).
-
+* Support average image mode for visual data exploration, inspired by [AverageExplorer](https://people.eecs.berkeley.edu/~junyanz/projects/averageExplorer/).
+* Support image morphing mode.
+* Support image editing mode.
 
 ## Citation
 ```
