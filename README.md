@@ -1,6 +1,6 @@
-## iGAN: Interactive Image Generation powered by GAN
+## iGAN: Interactive Image Generation via Generative Adversarial Networks
 [[Project]](http://www.eecs.berkeley.edu/~junyanz/projects/gvm/) [[Youtube]](https://youtu.be/9c4z6YsBGQ0)  
-Contact: Jun-Yan Zhu (junyanz at eecs dot berkeley dot edu)
+Contact: Jun-Yan Zhu (junyanz at eecs dot berkeley dot edu) [[Paper]] (https://arxiv.org/pdf/1609.03552v1.pdf)
 
 <img src='pics/demo.gif' width=320>
 
@@ -22,15 +22,19 @@ We are working on supporting more generative models (e.g. variational autoencode
 
 ## Getting started
 * Install the python libraries. (See `Requirements`).
-* Download the code from the GitHub.
+* Download the code from the GitHub:
 ```bash
 git clone https://github.com/junyanz/iGAN
 cd iGAN
 ```
-* Download the pre-trained GAN models (See `Pre-trained models`).
-* Run the code (Please do include the `THEANO_FLAGS`).
+* Download the model. (See `Model Zoo` for details):
 ``` bash
-THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_main.py --model_name outdoor_64 --model_type dcgan_theano
+bash ./models/scripts/download_dcgan_model.sh outdoor_64.dcgan_theano
+```
+
+* Run the python script:
+``` bash
+THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_main.py --model_name outdoor_64
 ```
 
 ## Requirements
@@ -50,7 +54,6 @@ sudo pip install --upgrade --no-deps git+git://github.com/Theano/Theano.git
 ```
 * [PyQt4](https://wiki.python.org/moin/PyQt4): more details on Qt installation can be found [here](http://www.saltycrane.com/blog/2008/01/how-to-install-pyqt4-on-ubuntu-linux/)
 ```bash
-sudo apt-cache search pyqt
 sudo apt-get install python-qt4
 ```
 * [Qdarkstyle](https://github.com/ColinDuquesnoy/QDarkStyleSheet)
@@ -64,25 +67,11 @@ sudo pip install dominate
 * GPU + CUDA + cuDNN:
 The code is tested on GTX Titan X + CUDA 7.5 + cuDNN 5.  Here are the tutorials on how to install [CUDA](http://www.r-tutor.com/gpu-computing/cuda-installation/cuda7.5-ubuntu) and [cuDNN](http://askubuntu.com/questions/767269/how-can-i-install-cudnn-on-ubuntu-16-04). A decent GPU is required to run the system at real-time. [**Warning**] If you run the program on a gpu server, you need to use a remote desktop software (e.g. VNC), which may introduce display artifacts and latency problem.
 
-## Pre-trained models:
-Download the theano DCGAN model (e.g. outdoor_64.dcgan_theano). Before using our system, please check out the random real images vs. DCGAN generated samples to see which kind of images that a model can produce.
-
-``` bash
-bash ./models/scripts/download_dcgan_model.sh outdoor_64.dcgan_theano
-```
-* [ourdoor_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/outdoor_64.dcgan_theano) (64x64): trained on 150K landscape images from MIT [Places](http://places.csail.mit.edu/) dataset [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/outdoor_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/outdoor_64_dcgan.png)].
-* [church_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/church_64.dcgan_theano) (64x64): trained on 126k church images from the [LSUN](http://lsun.cs.princeton.edu/2016/) challenge [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/church_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/church_64_dcgan.png)].
-* [shoes_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/shoes_64.dcgan_theano) (64x64): trained on 50K shoes images collected by [Yu and Grauman](http://vision.cs.utexas.edu/projects/finegrained/utzap50k/) [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_dcgan.png)].
-* [handbag_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/handbag_64.dcgan_theano) (64x64): trained on 137K handbag images downloaded from Amazon [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_dcgan.png)].
-
-We provide a simple script to generate samples from a pre-trained DCGAN model. You can run this script to test if Theano, CUDA, cuDNN are configured properly before running our interface.
-```bash
-THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python generate_samples.py --model_name outdoor_64 --model_type dcgan_theano --output_image outdoor_64_dcgan.png
-```
 
 
-## Interface:  
+## Interface:
 See [[Youtube]](https://youtu.be/9c4z6YsBGQ0?t=2m18s) at 2:18s for the interactive image generation demos.  
+
 <img src='pics/ui_intro.jpg' width=800>  
 
 #### Layout
@@ -99,6 +88,24 @@ See [[Youtube]](https://youtu.be/9c4z6YsBGQ0?t=2m18s) at 2:18s for the interacti
 * `Warping Brush`: We recommend you first use coloring and sketching before the warping brush. Right click to select a square region; hold left click to drag the region; scroll the mouse wheel to adjust the size of the square region.
 * Shortcuts: P for `Play`, F for `Fix`, R for `Restart`; S for `Save`; E for `Edits`; Q for quitting the program.
 * Tooltips: when you move the cursor over a button , the system will display the tooltip of the button.
+
+
+## Model Zoo:
+Download the theano DCGAN model (e.g. outdoor_64.dcgan_theano). Before using our system, please check out the random real images vs. DCGAN generated samples to see which kind of images that a model can produce.
+
+``` bash
+bash ./models/scripts/download_dcgan_model.sh outdoor_64.dcgan_theano
+```
+* [ourdoor_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/outdoor_64.dcgan_theano) (64x64): trained on 150K landscape images from MIT [Places](http://places.csail.mit.edu/) dataset [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/outdoor_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/outdoor_64_dcgan.png)].
+* [church_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/church_64.dcgan_theano) (64x64): trained on 126k church images from the [LSUN](http://lsun.cs.princeton.edu/2016/) challenge [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/church_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/church_64_dcgan.png)].
+* [shoes_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/shoes_64.dcgan_theano) (64x64): trained on 50K shoes images collected by [Yu and Grauman](http://vision.cs.utexas.edu/projects/finegrained/utzap50k/) [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_dcgan.png)].
+* [handbag_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/handbag_64.dcgan_theano) (64x64): trained on 137K handbag images downloaded from Amazon [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_dcgan.png)].
+
+We provide a simple script to generate samples from a pre-trained DCGAN model. You can run this script to test if Theano, CUDA, cuDNN are configured properly before running our interface.
+```bash
+THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python generate_samples.py --model_name outdoor_64 --output_image outdoor_64_dcgan.png
+```
+
 
 ## Command line arguments:
 Type `python iGAN_main.py --help` for a complete list of the arguments. Here we discuss some important arguments:
