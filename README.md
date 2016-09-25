@@ -1,6 +1,6 @@
 ## iGAN: Interactive Image Generation via Generative Adversarial Networks
-[[Project]](http://www.eecs.berkeley.edu/~junyanz/projects/gvm/) [[Youtube]](https://youtu.be/9c4z6YsBGQ0)  
-Contact: Jun-Yan Zhu (junyanz at eecs dot berkeley dot edu) [[Paper]] (https://arxiv.org/pdf/1609.03552v1.pdf)
+[[Project]](http://www.eecs.berkeley.edu/~junyanz/projects/gvm/) [[Youtube]](https://youtu.be/9c4z6YsBGQ0)   [[Paper]](https://arxiv.org/pdf/1609.03552v1.pdf)  
+Contact: Jun-Yan Zhu (junyanz@berkeley.edu)
 
 <img src='pics/demo.gif' width=320>
 
@@ -22,7 +22,7 @@ We are working on supporting more generative models (e.g. variational autoencode
 
 ## Getting started
 * Install the python libraries. (See `Requirements`).
-* Download the code from the GitHub:
+* Download the code from GitHub:
 ```bash
 git clone https://github.com/junyanz/iGAN
 cd iGAN
