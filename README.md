@@ -1,6 +1,6 @@
 ## iGAN: Interactive Image Generation via Generative Adversarial Networks
 [[Project]](http://www.eecs.berkeley.edu/~junyanz/projects/gvm/) [[Youtube]](https://youtu.be/9c4z6YsBGQ0)   [[Paper]](https://arxiv.org/pdf/1609.03552v1.pdf)  
-A research protoype developed by UC Berkeley and Adobe CTL.  
+A research prototype developed by UC Berkeley and Adobe CTL.  
 
 <img src='pics/demo.gif' width=320>
 
