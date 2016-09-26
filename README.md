@@ -1,7 +1,6 @@
 ## iGAN: Interactive Image Generation via Generative Adversarial Networks
 [[Project]](http://www.eecs.berkeley.edu/~junyanz/projects/gvm/) [[Youtube]](https://youtu.be/9c4z6YsBGQ0)   [[Paper]](https://arxiv.org/pdf/1609.03552v1.pdf)  
 From UC Berkeley and Adobe CTL  
-Contact: Jun-Yan Zhu (junyanz@berkeley.edu)
 
 <img src='pics/demo.gif' width=320>
 
@@ -20,6 +19,7 @@ Given a few user strokes, our system could produce photo-realistic samples that 
 
 We are working on supporting more generative models (e.g. variational autoencoder) and more deep learning frameworks (e.g. Tensorflow). You are welcome to propose new changes or contribute new features (e.g. Tensorflow branch) via pull requests. Please cite our paper if you find this code useful in your research.
 
+Contact: Jun-Yan Zhu (junyanz@berkeley.edu)
 
 ## Getting started
 * Install the python libraries. (See `Requirements`).
