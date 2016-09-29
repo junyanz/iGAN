@@ -3,7 +3,6 @@ from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 from random import Random
 from time import time
 seed = int(time())
-# seed=42
 py_rng = Random(seed)
 np_rng = RandomState(seed)
 t_rng = RandomStreams(seed)

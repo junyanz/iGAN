@@ -1,9 +1,8 @@
 import theano
 import theano.tensor as T
-import numpy as np
 
-from theano_utils import shared0s, floatX, sharedX
-from ops import l2norm
+from .theano_utils import floatX
+from .ops import l2norm
 
 def clip_norm(g, c, n):
     if c > 0:
@@ -180,37 +179,6 @@ class Adam(Update):
             v_c = v_t / (1-self.b2**t)
             p_t = p - (self.lr * m_c) / (T.sqrt(v_c) + self.e)
             p_t = self.regularizer.weight_regularize(p_t)
-            updates.append((m, m_t))
-            updates.append((v, v_t))
-            updates.append((p, p_t))
-        updates.append((t, t + 1.))
-        return updates
-
-class Adam2(Update):
-
-    def __init__(self, lr=0.001, b1=0.9, b2=0.999, e=1e-8, l=1-1e-8, batch_size=1, *args, **kwargs):
-        Update.__init__(self, *args, **kwargs)
-        self.__dict__.update(locals())
-
-    def __call__(self, params, cost):
-        updates = []
-        grads = T.grad(cost, params)
-        # grads = clip_norms(grads, self.clipnorm)
-        t = theano.shared(floatX(1.))
-        b1_t = self.b1*self.l**(t-1)
-
-        for p, g in zip(params, grads):
-            # g = self.regularizer.gradient_regularize(p, g)
-            m = theano.shared(p.get_value() * 0.)
-            v = theano.shared(p.get_value() * 0.)
-            # gg=g*sharedX(floatX(4))
-            gg = g*self.batch_size
-            m_t = b1_t*m + (1 - b1_t)*gg
-            v_t = self.b2*v + (1 - self.b2)*gg**2
-            m_c = m_t / (1-self.b1**t)
-            v_c = v_t / (1-self.b2**t)
-            p_t = p - (self.lr * m_c) / (T.sqrt(v_c) + self.e)
-            # p_t = self.regularizer.weight_regularize(p_t)
             updates.append((m, m_t))
             updates.append((v, v_t))
             updates.append((p, p_t))

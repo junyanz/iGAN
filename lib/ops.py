@@ -7,7 +7,7 @@ from theano.sandbox.cuda.basic_ops import (as_cuda_ndarray_variable,
 from theano.sandbox.cuda.dnn import GpuDnnConvDesc, GpuDnnConv, GpuDnnConvGradI, dnn_conv, dnn_pool
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
-from rng import t_rng
+from .rng import t_rng
 
 t_rng = RandomStreams()
 

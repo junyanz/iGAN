@@ -1,7 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import gui_draw
-import gui_vis
+from . import gui_draw
+from . import gui_vis
 import time
 
 class GUIDesign(QWidget):
@@ -126,7 +126,7 @@ class GUIDesign(QWidget):
         self.drawWidget.show_edits()
 
     def save(self):
-        print 'time spent = %3.3f' % (time.time()-self.start_t)
+        print('time spent = %3.3f' % (time.time()-self.start_t))
         self.visWidget.save()
 
     def keyPressEvent(self, event):
@@ -134,7 +134,7 @@ class GUIDesign(QWidget):
            self.reset()
 
         if event.key() == Qt.Key_Q:
-            print 'time spent = %3.3f' % (time.time()-self.start_t)
+            print('time spent = %3.3f' % (time.time()-self.start_t))
             self.close()
 
         if event.key() == Qt.Key_E:

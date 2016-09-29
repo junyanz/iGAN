@@ -4,10 +4,10 @@ import cv2
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from ui_recorder import UIRecorder
-from ui_color import UIColor
-from ui_sketch import UISketch
-from ui_warp import UIWarp
+from .ui_recorder import UIRecorder
+from .ui_color import UIColor
+from .ui_sketch import UISketch
+from .ui_warp import UIWarp
 
 class GUIDraw(QWidget):
     def __init__(self, opt_engine, batch_size=32, n_iters=25, nps=320, topK=16, hash=None, hash_z=None):
@@ -161,7 +161,7 @@ class GUIDraw(QWidget):
             painter.setBrush(ca)
             if self.type is 'warp':
                 if self.show_ui:
-                    painter.drawRect(int(self.pos.x()-w/2),int(self.pos.y()-w/2), w, w)
+                    painter.drawRect(int(self.pos.x()-w/2.0),int(self.pos.y() - w/2.0), w, w)
             else:
                 painter.drawEllipse(pnt, w, w)
 
@@ -239,13 +239,13 @@ class GUIDraw(QWidget):
                 # QColorDialog.move((0,0))
                 color = QColorDialog.getColor(parent=self)
                 self.color = color
-
-            if self.type is 'edge':
-                if self.color is Qt.black:
-                    self.color = Qt.white
-                else:
-                    self.color = Qt.black
-                self.brushWidth = self.uiSketch.update_width(0, self.color)
+            #
+            # if self.type is 'edge':
+            #     if self.color is Qt.black:
+            #         self.color = Qt.white
+            #     else:
+            #         self.color = Qt.black
+            #     self.brushWidth = self.uiSketch.update_width(0, self.color)
 
             if self.type is 'warp':
                 im = self.opt_engine.get_image(self.get_image_id(), self.get_frame_id())
