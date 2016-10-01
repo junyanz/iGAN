@@ -1,11 +1,8 @@
-import os
 import numpy as np
 
-import theano
-import theano.tensor as T
 
-from theano_utils import sharedX, floatX, intX
-from rng import np_rng
+from .theano_utils import sharedX, floatX, intX
+from .rng import np_rng
 
 class Uniform(object):
     def __init__(self, scale=0.05):

@@ -1,5 +1,5 @@
 import os
-from . import utils
+from lib import utils
 import pickle
 
 model_name = 'shirts_64'

@@ -1,12 +1,7 @@
 import os
 from lib import image_save
 from lib import utils
-import cv2
-from time import gmtime, strftime
-import cPickle
 from PyQt4 import QtGui
-# from PyQt4.QtCore import *
-# from PyQt4.QtGui import *
 
 class SaveResult():
     def __init__(self, model_name):
@@ -36,7 +31,7 @@ class SaveResult():
             utils.mkdirs(self.save_dir)
             self.html = image_save.ImageSave(self.save_dir, 'Gui screenshot', append=True)
 
-        print 'save the result to (%s)' % self.save_dir
+        print('save the result to (%s)' % self.save_dir)
 
         if self.z is not None:
             self.z_dir = os.path.join(self.save_dir, 'z_vectors')

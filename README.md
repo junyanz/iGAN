@@ -64,6 +64,13 @@ sudo pip install dominate
 * GPU + CUDA + cuDNN:
 The code is tested on GTX Titan X + CUDA 7.5 + cuDNN 5.  Here are the tutorials on how to install [CUDA](http://www.r-tutor.com/gpu-computing/cuda-installation/cuda7.5-ubuntu) and [cuDNN](http://askubuntu.com/questions/767269/how-can-i-install-cudnn-on-ubuntu-16-04). A decent GPU is required to run the system at real-time. [**Warning**] If you run the program on a gpu server, you need to use a remote desktop software (e.g. VNC), which may introduce display artifacts and latency problem.
 
+## Python3
+For `Python3` users, you need to replace `pip` with `pip3`:
+* PyQt4 with Python3:
+``` bash
+sudo apt-get install python3-pyqt4
+```
+* OpenCV3 with Python3: see the installation [instruction](http://www.pyimagesearch.com/2015/07/20/install-opencv-3-0-and-python-3-4-on-ubuntu/).
 
 
 ## Interface:
@@ -112,10 +119,9 @@ Type `python iGAN_main.py --help` for a complete list of the arguments. Here we 
 * `--top_k`: the number of the candidate results being displayed
 
 
-## Try your own data and models
-* DCGAN_theano model on new datasets: we will provide a model training script soon (by Sep 25 2016). The script can train a model (e.g. cat_64.dcgan_theano) given a new photo collection. (e.g. cat_photos/)
-* New deep generative models based on Theano (e.g. VAE：variational autoencoder): The current design of our software follows: ui python class (e.g. `gui_draw.py`) => constrained optimization python class (`constrained_opt_theano.py`) => deep generative model python class (e.g. `dcgan_theano.py`). To incorporate your own generative model, you need to create a new python class (e.g. `vae_theano.py`) under `model_def` folder with the same interface of `dcgan_theano.py`, and specify `--model_type vae_theano` in the command line.
-* Generative models based on another deep learning framework (e.g. Tensorflow): we are working on a tensorflow based optimization class (i.e. `constrained_opt_tensorflow.py`) now. Once the code is released, you can create your own tensorflow model class (e.g. `dcgan_tensorflow.py`) under `model_def` folder.
+## Dataset and Training
+See [README](./train_dcgan/README.md).
+
 
 ## TODO
 * Support Python3.
