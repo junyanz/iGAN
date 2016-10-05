@@ -1,27 +1,43 @@
+import sys
+sys.path.append('..')
 import os
 from lib import utils
-import pickle
+import argparse
+
+# set parameters and arguments
+parser = argparse.ArgumentParser('compute batchnorm statistics for DCGAN model')
+parser.add_argument('--model_name', dest='model_name', help='model name', default='shoes_64', type=str)
+parser.add_argument('--cache_dir', dest='cache_dir', help='cache directory that stores models, samples and webpages', type=str, default=None)
+parser.add_argument('--output_model', dest='output_model', help='output file that contains the compact model', type=str, default=None)
+parser.add_argument('--ext', dest='ext', help='experiment name=model_name+ext', default='', type=str)
+args = parser.parse_args()
 
 model_name = 'shirts_64'
 print( 'pack model (%s)' % model_name )
-model_fold = '../../models/%s' % model_name
-output_model = '../../models/%s.dcgan_theano' % model_name
 
-def load_postlearn(model_file):
-    # st()
-    with open(model_file, 'rb') as f:
-        n_disc = pickle.load(f)
-        bn_u = pickle.load(f)
-        bn_s = pickle.load(f)
-    gen_params = bn_u[:n_disc] + bn_s[:n_disc]
-    disc_params = bn_u[n_disc:] + bn_s[n_disc:]
-    return disc_params, gen_params
+expr_name = args.model_name + args.ext
+if not args.cache_dir:
+    args.cache_dir = './cache/%s/' % expr_name
+
+model_dir = os.path.join(args.cache_dir, 'models')
+
+if not args.output_model:
+    args.output_model = os.path.join(args.cache_dir, '%s.dcgan_theano' % expr_name)
+
+
+for arg in vars(args):
+    print('[%s]' % arg, getattr(args, arg))
+
 # load models
 model = {}
-names = ['disc_params', 'gen_params', 'postlearn_params', 'predict_params', 'postlearn_predict_params']
+names = ['disc_params', 'gen_params', 'disc_batchnorm', 'gen_batchnorm', 'predict_params', 'predict_batchnorm']
+
 for name in names:
-    if name == 'postlearn_params':
-        model[name] = load_postlearn(os.path.join(model_fold, name))
+    model_file = os.path.join(model_dir, name)
+    if os.path.isfile(model_file):
+        print('find model file %s' % model_file)
+        model[name] = utils.PickleLoad(model_file)
     else:
-        model[name] = utils.PickleLoad(os.path.join(model_fold, name))
-utils.PickleSave(output_model, model)
+        print('missing model file %s' % model_file)
+
+utils.PickleSave(args.output_model, model)

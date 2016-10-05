@@ -26,3 +26,9 @@ def church_64():
     nc = 3
     return npx, n_layers, n_f, nc
 
+def shoes_test():
+    n_layers = 3
+    n_f = 128
+    npx = 64
+    nc = 3
+    return npx, n_layers, n_f, nc

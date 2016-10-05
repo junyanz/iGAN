@@ -2,8 +2,8 @@ import numpy as np
 import theano
 import theano.tensor as T
 from theano.sandbox.cuda.dnn import dnn_conv
-from lib.theano_utils import floatX, sharedX
-
+from theano_utils import floatX, sharedX
+from time import time
 NO = 8
 BS = 8
 
@@ -51,14 +51,25 @@ def get_hog(x_o, use_bin=True, NO=8, BS=8):
     else:
         return g
 
-
+print('COMPILING')
+t = time()
 m = T.tensor4()
 bf_w = np.ones((1, 1, 2*BS, 2*BS))
 bf = sharedX(floatX(bf_w))
 m_b = dnn_conv(m, bf, subsample=(BS,BS), border_mode=(BS/2, BS/2))
 compMask = theano.function(inputs=[m],outputs=m_b)
+print('%.2f seconds to compile [compMask] functions' % (time() - t))
 
 def comp_mask(masks):
     masks = np.asarray(compMask(masks))
     masks = masks > 1e-5
     return masks
+
+#
+if __name__ == "__main__":
+    import numpy as np
+    test_img = np.zeros((1, 1, 64, 64), np.float32)
+    test_mask =  comp_mask(test_img)
+    print test_mask.shape
+    print test_mask
+

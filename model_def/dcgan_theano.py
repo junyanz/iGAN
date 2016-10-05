@@ -18,15 +18,15 @@ class Model(object):
         self.model_name = model_name
         self.model_file = model_file
         self.npx, self.n_layers, self.n_f, self.nc = getattr(dcgan_theano_config, model_name)()
-        self.disc_params, self.gen_params, self.disc_pl, self.gen_pl = get_params(model_file, self.n_layers, self.n_f)
+        self.disc_params, self.gen_params, self.disc_batchnorm, self.gen_batchnorm = get_params_old(model_file, self.n_layers, self.n_f)
         # compile gen
-        self._gen = self.def_gen(self.gen_params, self.gen_pl, self.n_layers, self.n_f)
+        self._gen = self.def_gen(self.gen_params, self.gen_batchnorm, self.n_layers, self.n_f)
 
     def model_G(self, z):  # z => x
-        return gen_test(z, self.gen_params, self.gen_pl, self.n_layers, self.n_f, use_tanh=True)
+        return gen_test(z, self.gen_params, self.gen_batchnorm, self.n_layers, self.n_f, use_tanh=True)
 
     def model_D(self, x):  # x => 0/1
-        return disc_test(x, self.disc_params, self.disc_pl, n_layers=self.n_layers)
+        return disc_test(x, self.disc_params, self.disc_batchnorm, n_layers=self.n_layers)
 
     def def_gen(self, gen_params, gen_pl, n_layers, n_f):
         z = T.matrix()
@@ -80,22 +80,42 @@ class Model(object):
 
 
 
-def get_params(model_file, n_layers, n_f, nz=100, nc=3):
+def get_params_old(model_file, n_layers, n_f, nz=100, nc=3):
     print('LOADING...')
     t = time()
 
-    disc_params = init_disc_params(nz=nz, n_f=n_f, n_layers=n_layers, nc=nc)
+    disc_params = init_disc_params(n_f=n_f, n_layers=n_layers, nc=nc)
     gen_params = init_gen_params(nz=nz, n_f=n_f, n_layers=n_layers, nc=nc)
     # load the model
     model = utils.PickleLoad(model_file)
     print('load model from %s' % model_file)
     set_model(disc_params, model['disc_params'])
     set_model(gen_params, model['gen_params'])
-    [disc_pl, gen_pl] = model['postlearn_params']
-    disc_pl = [sharedX(d) for d in disc_pl]
-    gen_pl = [sharedX(d) for d in gen_pl]
+    # disc_batchnorm = model['disc_batchnorm']
+    # gen_batchnorm = model['gen_batchnorm']
+    disc_batchnorm, gen_batchnorm = model['postlearn_params']
+    disc_batchnorm = [sharedX(d) for d in disc_batchnorm]
+    gen_batchnorm = [sharedX(d) for d in gen_batchnorm]
     print('%.2f seconds to load theano models' % (time() - t))
-    return disc_params, gen_params, disc_pl, gen_pl
+    return disc_params, gen_params, disc_batchnorm, gen_batchnorm
+
+def get_params(model_file, n_layers, n_f, nz=100, nc=3):
+    print('LOADING...')
+    t = time()
+
+    disc_params = init_disc_params(n_f=n_f, n_layers=n_layers, nc=nc)
+    gen_params = init_gen_params(nz=nz, n_f=n_f, n_layers=n_layers, nc=nc)
+    # load the model
+    model = utils.PickleLoad(model_file)
+    print('load model from %s' % model_file)
+    set_model(disc_params, model['disc_params'])
+    set_model(gen_params, model['gen_params'])
+    disc_batchnorm = model['disc_batchnorm']
+    gen_batchnorm = model['gen_batchnorm']
+    disc_batchnorm = [sharedX(d) for d in disc_batchnorm]
+    gen_batchnorm = [sharedX(d) for d in gen_batchnorm]
+    print('%.2f seconds to load theano models' % (time() - t))
+    return disc_params, gen_params, disc_batchnorm, gen_batchnorm
 
 
 def set_model(params, params_values):
@@ -160,7 +180,7 @@ def init_predict_params(nz=100, n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
 
 
 
-def init_disc_params(nz=100, n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
+def init_disc_params(n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
     all_params = []
     dw0 = difn((n_f, nc, fs, fs), 'dw0')
     # db0 = bias_ifn((n_f), 'db0')
@@ -179,36 +199,36 @@ def init_disc_params(nz=100, n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
     return all_params
 
 
-def disc_test(_x, _params, _pls, n_layers=3):
+def disc_test(_x, _params, _batchnorm, n_layers=3):
     w = _params[0]
     h0 = lrelu(dnn_conv(_x, w, subsample=(2, 2), border_mode=(2, 2)))
     hs = [h0]
     for n in range(n_layers):
         hin = hs[-1]
         w, g, b = _params[1 + 3 * n:1 + 3 * (n + 1)]
-        u = _pls[n]
-        s = _pls[n + n_layers]
+        u = _batchnorm[n]
+        s = _batchnorm[n + n_layers]
         hout = lrelu(batchnorm(dnn_conv(hin, w, subsample=(2, 2), border_mode=(2, 2)), u=u, s=s, g=g, b=b))
         hs.append(hout)
     h = T.flatten(hs[-1], 2)
     y = sigmoid(T.dot(h, _params[-1]))
     return y
 
-def gen_test(_z, _params, _pls, n_layers=3, n_f=128, init_sz=4, use_tanh=False):
+def gen_test(_z, _params, _batchnorm, n_layers=3, n_f=128, init_sz=4, use_tanh=False):
     if use_tanh:
         _z= tanh(_z)
     [gw0, gg0, gb0] = _params[0:3]
     hs = []
-    u = _pls[0]
-    s = _pls[n_layers + 1]
+    u = _batchnorm[0]
+    s = _batchnorm[n_layers + 1]
     h0 = relu(batchnorm(T.dot(T.clip(_z, -1.0, 1.0), gw0), u=u, s=s, g=gg0, b=gb0))
     h1 = h0.reshape((h0.shape[0], n_f * 2 ** n_layers, init_sz, init_sz))
     hs.extend([h0, h1])
     for n in range(n_layers):
         [w, g, b] = _params[3 * (n + 1):3 * (n + 2)]
         hin = hs[-1]
-        u = _pls[n + 1]
-        s = _pls[n + n_layers + 2]
+        u = _batchnorm[n + 1]
+        s = _batchnorm[n + n_layers + 2]
         hout = relu(batchnorm(deconv(hin, w, subsample=(2, 2), border_mode=(2, 2)), u=u, s=s, g=g, b=b))
         hs.append(hout)
     x = tanh(deconv(hs[-1], _params[-1], subsample=(2, 2), border_mode=(2, 2)))

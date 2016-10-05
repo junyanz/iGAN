@@ -10,7 +10,7 @@ from PyQt4.QtCore import *
 
 
 class Constrained_OPT(QThread):
-    def __init__(self, model, batch_size=32, n_iters=25, topK=16, morph_steps=16, interp='linear'):
+    def __init__(self, model, batch_size=32, n_iters=25, topK=16, morph_steps=16, nc=3, interp='linear'):
         QThread.__init__(self)
         self.model = model
         self.npx = model.npx
@@ -39,7 +39,6 @@ class Constrained_OPT(QThread):
         self.to_update = False
         self.to_set_constraints = False
         self.order = None
-        self.useColor = True
 
 
         self.prev_z = self.z0
@@ -56,17 +55,6 @@ class Constrained_OPT(QThread):
         self.current_ims=self.im_target
         self.order = [0]
         self.gen_morphing(self.model, self.interp, self.morph_steps)
-
-
-
-    def use_color(self):
-        self.useColor = True
-        print('use color for morphing')
-
-    def use_no_color(self):
-        self.useColor = False
-        print("do not use color for morphing")
-
 
 
     def isInited(self):
@@ -149,7 +137,11 @@ class Constrained_OPT(QThread):
         mask_c= self.transform_mask(mask_c_o[np.newaxis, :])
         im_e = self.transform(im_e_o[np.newaxis, :])
         mask_t = self.transform_mask(mask_e_o[np.newaxis, :])
+        print 'mask_t_dtype', mask_t.dtype
+        print 'mask_t_shape', mask_t.shape
+        print mask_t
         mask_e = HOGNet.comp_mask(mask_t)
+        print 'mask_e_shape', mask_e.shape
         shp = [self.batch_size, 1, 1, 1]
         im_c_t = np.tile(im_c, shp)
         mask_c_t = np.tile(mask_c, shp)
@@ -324,8 +316,7 @@ class Constrained_OPT(QThread):
         mm_e = T.tile(m_e, (1, gx_edge.shape[1], 1, 1))
         sum_e = T.sum(T.abs_(mm_e))
         sum_x_edge = T.sum(T.abs_(x_edge))
-        edge_all = T.mean(T.sqr(x_edge - gx_edge) * mm_e, axis=(1, 2, 3)) / (
-        T.mean(m_e, axis=(1, 2, 3)) + sharedX(1e-5))
+        edge_all = T.mean(T.sqr(x_edge - gx_edge) * mm_e, axis=(1, 2, 3)) / (T.mean(m_e, axis=(1, 2, 3)) + sharedX(1e-5))
         rec_all = color_all + edge_all * sharedX(0.2)
         z_const = sharedX(10.0)
         init_all = T.mean(T.sqr(z0 - z)) * z_const
@@ -333,7 +324,7 @@ class Constrained_OPT(QThread):
         if beta > 0:
             print('using D')
             p_gen = model.model_D(gx)
-            real_all = T.nnet.binary_crossentropy(p_gen, T.ones(p_gen.shape)).T  # costs.bce(p_gen, T.ones(p_gen.shape))
+            real_all = T.nnet.binary_crossentropy(p_gen, T.ones(p_gen.shape)).T
             cost_all = rec_all + beta_r * real_all[0] + init_all
         else:
             print('without D')
@@ -341,7 +332,7 @@ class Constrained_OPT(QThread):
             real_all = T.zeros(cost_all.shape)
 
         cost = T.sum(cost_all)
-        d_updater = updates.Adam(lr=sharedX(lr), b1=sharedX(b1))  # ,regularizer=updates.Regularizer(l2=l2))
+        d_updater = updates.Adam(lr=sharedX(lr), b1=sharedX(b1))
         output = [gx, cost, cost_all, rec_all, real_all, init_all, sum_e, sum_x_edge]
 
         print('COMPILING...')

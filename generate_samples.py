@@ -23,7 +23,7 @@ if __name__ == '__main__':
         args.output_image = '%s_%s_samples.png' % (args.model_name, args.model_type)
 
     for arg in vars(args):
-        print('[%s] =' % arg, getattr(args, arg))
+        print('[%s]' % arg, getattr(args, arg))
 
     # initialize model and constrained optimization problem
     model_class = locate('model_def.%s' % args.model_type)
