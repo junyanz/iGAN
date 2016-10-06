@@ -137,11 +137,7 @@ class Constrained_OPT(QThread):
         mask_c= self.transform_mask(mask_c_o[np.newaxis, :])
         im_e = self.transform(im_e_o[np.newaxis, :])
         mask_t = self.transform_mask(mask_e_o[np.newaxis, :])
-        print 'mask_t_dtype', mask_t.dtype
-        print 'mask_t_shape', mask_t.shape
-        print mask_t
         mask_e = HOGNet.comp_mask(mask_t)
-        print 'mask_e_shape', mask_e.shape
         shp = [self.batch_size, 1, 1, 1]
         im_c_t = np.tile(im_c, shp)
         mask_c_t = np.tile(mask_c, shp)
@@ -161,7 +157,7 @@ class Constrained_OPT(QThread):
             return None
 
     def run(self): #
-        time_to_wait = 33 # milesecond
+        time_to_wait = 33 # 33 millisecond
         while (1):
             t1 =time()
             if self.to_set_constraints:# update constraints

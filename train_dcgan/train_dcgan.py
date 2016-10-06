@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 sys.path.append('..')
 import os
@@ -7,14 +8,14 @@ import numpy as np
 from tqdm import tqdm
 import theano
 import theano.tensor as T
-from . import train_dcgan_config
+import train_dcgan_config
 from lib import updates
 from lib import utils
 from lib.rng import py_rng, np_rng
 from lib import costs
-from . import train_dcgan_utils
+import train_dcgan_utils
 from lib.theano_utils import floatX, sharedX
-from . import load
+import load
 from lib import image_save
 import argparse
 
@@ -45,7 +46,7 @@ if not args.cache_dir:
     args.cache_dir = './cache/%s/' % expr_name
 
 for arg in vars(args):
-    print('[%s]' % arg, getattr(args, arg))
+    print('[%s] =' % arg, getattr(args, arg))
 
 # create directories
 sample_dir = os.path.join(args.cache_dir, 'samples')

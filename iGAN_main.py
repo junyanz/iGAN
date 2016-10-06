@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import argparse
 import qdarkstyle
@@ -30,7 +31,7 @@ if __name__ == '__main__':
         args.model_file = './models/%s.%s' % (args.model_name, args.model_type)
 
     for arg in vars(args):
-        print('[%s]' % arg, getattr(args, arg))
+        print('[%s] =' % arg, getattr(args, arg))
 
     args.win_size = int(args.win_size / 4.0) * 4  # make sure the width of the image can be divided by 4
     # initialize model and constrained optimization problem

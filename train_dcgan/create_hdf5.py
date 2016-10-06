@@ -1,16 +1,16 @@
+from __future__ import print_function
 import sys
 sys.path.append('..')
 import h5py
 import os
 import numpy as np
 from fuel.datasets.hdf5 import H5PYDataset
-import lmdb
 import cv2
 import argparse
 
 
 def print_name(name):
-    print name
+    print(name)
 
 # set arguments and parameters
 parser = argparse.ArgumentParser('create a hdf5 file from lmdb or image directory')
@@ -23,7 +23,7 @@ args = parser.parse_args()
 
 
 for arg in vars(args):
-    print('[%s]' % arg,  getattr(args, arg))
+    print('[%s] = ' % arg,  getattr(args, arg))
 
 width = args.width
 
@@ -66,6 +66,9 @@ else:
 
 
     if args.mode == 'lmdb':  # convert lmdb to hdf5
+        print('you need to install lmdb')
+        print('sudo pip install lmdb')
+        import lmdb
         env = lmdb.open(args.dataset_dir, map_size=1099511627776,
                     max_readers=100, readonly=True)
         imgs = list()

@@ -114,18 +114,18 @@ def grid_vis(X, nh, nw): #[buggy]
     if X.shape[0] == 1:
         return X[0]
 
-    nc = 3
+    # nc = 3
     if X.ndim == 3:
         X = X[..., np.newaxis]
     if X.shape[-1] == 1:
-        nc = 1
+        X = np.tile(X, [1,1,1,3])
 
     h, w = X[0].shape[:2]
 
     if X.dtype == np.uint8:
-        img = np.ones((h * nh, w * nw, nc), np.uint8) * 255
+        img = np.ones((h * nh, w * nw, 3), np.uint8) * 255
     else:
-        img = np.ones((h * nh, w * nw, nc), X.dtype)
+        img = np.ones((h * nh, w * nw, 3), X.dtype)
 
     for n, x in enumerate(X):
         j = n // nw

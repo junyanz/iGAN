@@ -18,7 +18,7 @@ class Model(object):
         self.model_name = model_name
         self.model_file = model_file
         self.npx, self.n_layers, self.n_f, self.nc = getattr(dcgan_theano_config, model_name)()
-        self.disc_params, self.gen_params, self.disc_batchnorm, self.gen_batchnorm = get_params_old(model_file, self.n_layers, self.n_f)
+        self.disc_params, self.gen_params, self.disc_batchnorm, self.gen_batchnorm = get_params(model_file, self.n_layers, self.n_f)
         # compile gen
         self._gen = self.def_gen(self.gen_params, self.gen_batchnorm, self.n_layers, self.n_f)
 

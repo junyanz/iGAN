@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 sys.path.append('..')
 import os
@@ -12,10 +13,8 @@ parser.add_argument('--output_model', dest='output_model', help='output file tha
 parser.add_argument('--ext', dest='ext', help='experiment name=model_name+ext', default='', type=str)
 args = parser.parse_args()
 
-model_name = 'shirts_64'
-print( 'pack model (%s)' % model_name )
-
 expr_name = args.model_name + args.ext
+
 if not args.cache_dir:
     args.cache_dir = './cache/%s/' % expr_name
 
@@ -26,7 +25,7 @@ if not args.output_model:
 
 
 for arg in vars(args):
-    print('[%s]' % arg, getattr(args, arg))
+    print('[%s] =' % arg, getattr(args, arg))
 
 # load models
 model = {}

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 sys.path.append('..')
 import numpy as np
@@ -35,7 +36,7 @@ if not args.data_file:
 
 
 for arg in vars(args):
-    print('[%s]' % arg, getattr(args, arg))
+    print('[%s] =' % arg, getattr(args, arg))
 
 model_dir = os.path.join(args.cache_dir, 'models')
 predict_bn_path = os.path.join(model_dir, 'predict_batchnorm')
