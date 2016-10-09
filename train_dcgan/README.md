@@ -21,8 +21,11 @@ Download the sketch datasets (e.g. sketch_shoes_64)
   ```bash
   sudo pip install tqdm
   ```
-  * [Fuel](https://fuel.readthedocs.io/en/latest/)
+
+
+  * Install [h5py](http://docs.h5py.org/en/latest/build.html) and　[Fuel](https://fuel.readthedocs.io/en/latest/)
   ```bash
+  sudo pip install h5py
   sudo pip install git+git://github.com/mila-udem/fuel.git
   ```
 
@@ -48,10 +51,6 @@ Download the sketch datasets (e.g. sketch_shoes_64)
   ```
 
 * Train a model on your own dataset
-  * Install [h5py](http://docs.h5py.org/en/latest/build.html) and [lmdb](https://lmdb.readthedocs.io/en/release/)
-  ```bash
-  sudo pip install h5py, lmdb
-  ```
   * Run the script to create a hdf5 file from an image collection (see `python create_hdf5.py --help` for more details):
   ```bash
   python create_hdf5.py --dataset_dir YOUR_OWN_FOLDER --width 64 --mode dir --channel 3 --hdf5_file images.hdf5

@@ -37,4 +37,4 @@ if __name__ == '__main__':
     im_vis = cv2.cvtColor(im_vis, cv2.COLOR_BGR2RGB)
     cv2.imwrite(args.output_image, im_vis)
     print('samples_shape', samples.shape)
-    print('save image to %s', args.output_image)
+    print('save image to %s' % args.output_image)

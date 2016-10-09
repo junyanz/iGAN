@@ -37,7 +37,7 @@ class Model(object):
         print('%.2f seconds to compile _gen function' % (time() - t))
         return _gen
 
-    def gen_samples(self, z0=None, n=32, batch_size=32, nz=100,  use_transform=True):
+    def gen_samples(self, z0=None, n=32, batch_size=32, nz=100, use_transform=True):
         assert n % batch_size == 0
 
         samples = []
@@ -57,7 +57,7 @@ class Model(object):
         samples = np.concatenate(samples, axis=0)
 
         if use_transform:
-            samples = self.inverse_transform(samples, npx=self.npx)
+            samples = self.inverse_transform(samples, npx=self.npx, nc=self.nc)
             samples = (samples * 255).astype(np.uint8)
         return samples
 

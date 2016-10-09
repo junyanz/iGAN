@@ -69,8 +69,6 @@ ntest = int(np.floor(ntest/float(args.batch_size)) * args.batch_size)
 test_x, = te_data.get_data(te_handle, slice(0, ntest))
 
 test_x = train_dcgan_utils.transform(test_x, nc=nc)
-print('%d test images' % ntest)
-st()
 predict_params = train_dcgan_utils.init_predict_params(nz=nz, n_f=n_f, n_layers=n_layers, nc=nc)
 # load modelG
 gen_params = train_dcgan_utils.init_gen_params(nz=nz, n_f=n_f, n_layers=n_layers, nc=nc)
@@ -88,11 +86,11 @@ pixel_loss = costs.L2Loss(gx, x)
 
 # define feature loss
 x_t = AlexNet.transform_im(x, npx=npx, nc=nc)
-x_net = AlexNet.build_model(x_t, layer=args.layer, shape=(None, 3, 64, 64))
+x_net = AlexNet.build_model(x_t, layer=args.layer, shape=(None, 3, npx, npx))
 AlexNet.load_model(x_net, layer=args.layer)
 x_f = lasagne.layers.get_output(x_net[args.layer], deterministic=True)
 gx_t = AlexNet.transform_im(gx, npx=npx, nc=nc)
-gx_net = AlexNet.build_model(gx_t, layer=args.layer, shape=(None, 3, 64, 64))
+gx_net = AlexNet.build_model(gx_t, layer=args.layer, shape=(None, 3, npx, npx))
 AlexNet.load_model(gx_net, layer=args.layer)
 gx_f = lasagne.layers.get_output(gx_net[args.layer], deterministic=True)
 ftr_loss = costs.L2Loss(gx_f, x_f)
@@ -135,7 +133,7 @@ def rec_test(test_data, n_epochs=0, batch_size=128, output_dir=None):
             rec_imgs.append(train_dcgan_utils.inverse_transform(gx, npx=npx, nc=nc))
 
     if output_dir is not None:
-        st()
+        # st()
         save_samples = np.hstack(np.concatenate(imgs, axis=0))
         save_recs = np.hstack(np.concatenate(rec_imgs, axis=0))
         save_comp = np.vstack([save_samples, save_recs])
@@ -168,7 +166,7 @@ for epoch in range(niter + niter_decay):
         imb = train_dcgan_utils.transform(xmb, nc=nc)
         n += 1
         train_cost = _train_p(imb)
-        print('\repoch = %3.3d, n = %3.3d/%3.3d, train_cost = %4.4f' % (epoch, n, total_n, train_cost)),
+        print('epoch = %3.3d, n = %3.3d/%3.3d, train_cost = %4.4f' % (epoch, n, total_n, train_cost)),
         n_updates += 1
         n_examples += len(xmb)
 
