@@ -45,10 +45,6 @@ The code is written in Python2 and requires the following 3rd party libraries:
 ```bash
 sudo apt-get install python-opencv
 ```
-* As an alternative to opencv, you can install scikit-image
-```bash
-sudo pip install -U scikit-image
-```
 * [Theano](https://github.com/Theano/Theano)
 ```bash
 sudo pip install --upgrade --no-deps git+git://github.com/Theano/Theano.git
@@ -116,15 +112,14 @@ Type `python iGAN_main.py --help` for a complete list of the arguments. Here we 
 * `--top_k`: the number of the candidate results being displayed
 
 
-## Try your own data and models
-* DCGAN_theano model on new datasets: we will provide a model training script soon (by Sep 25 2016). The script can train a model (e.g. cat_64.dcgan_theano) given a new photo collection. (e.g. cat_photos/)
-* New deep generative models based on Theano (e.g. VAE：variational autoencoder): The current design of our software follows: ui python class (e.g. `gui_draw.py`) => constrained optimization python class (`constrained_opt_theano.py`) => deep generative model python class (e.g. `dcgan_theano.py`). To incorporate your own generative model, you need to create a new python class (e.g. `vae_theano.py`) under `model_def` folder with the same interface of `dcgan_theano.py`, and specify `--model_type vae_theano` in the command line.
-* Generative models based on another deep learning framework (e.g. Tensorflow): we are working on a tensorflow based optimization class (i.e. `constrained_opt_tensorflow.py`) now. Once the code is released, you can create your own tensorflow model class (e.g. `dcgan_tensorflow.py`) under `model_def` folder.
+## Model Traing and Datasets
+See `train_dcgan` under [dev](https://github.com/junyanz/iGAN/tree/dev/train_dcgan) branch.
 
 ## TODO
-* Support Python3.
+* ~~Support Python3.~~ (See [dev](https://github.com/junyanz/iGAN/tree/dev) branch)
+* ~~Add the DCGAN model training script.~~  (See [dev](https://github.com/junyanz/iGAN/tree/dev) branch)
+* ~~Add datasets.~~ (See [dev](https://github.com/junyanz/iGAN/tree/dev) branch)
 * Add 128x128 models.
-* Add the DCGAN model training script.  
 * Add the script for projecting an image to the latent vector `z`.
 * Support other deep learning frameworks (e.g. Tensorflow).
 * Support other deep generative models (e.g. variational autoencoder).
