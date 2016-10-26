@@ -21,12 +21,10 @@ def get_hog(x_o, use_bin=True, NO=8, BS=8):
     G = np.concatenate([Gx[np.newaxis, np.newaxis, :, :], Gy[np.newaxis, np.newaxis, :, :]], axis=0)
     G_f = sharedX(floatX(G))
 
-    # st()
     a = np.cos(np.pi / NO)
     l1 = sharedX(floatX(1/(1-a)))
     l2 = sharedX(floatX(a/(1-a)))
     eps = sharedX(1e-3)
-    # x = T.tensor4()
     x_gray = T.mean(x, axis=1).dimshuffle(0, 'x', 1, 2)
     f1 = sharedX(floatX(f1_w))
     h0 = T.abs_(dnn_conv(x_gray, f1, subsample=(1, 1), border_mode=(1, 1)))

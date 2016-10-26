@@ -21,7 +21,7 @@ def parse_args():
     parser.add_argument('--model_file', dest='model_file', help='the file that stores the generative model', type=str, default=None)
     parser.add_argument('--d_weight', dest='d_weight', help='captures the visual realism based on GAN discriminator', type=float, default=0.0)
     parser.add_argument('--interp', dest='interp', help='the interpolation method (linear or slerp)', type=str, default='linear')
-
+    parser.add_argument('--average', dest='average', help='display average image',action="store_true", default=False)
     args = parser.parse_args()
     return args
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     opt_solver = opt_class.OPT_Solver(model_G, batch_size=args.batch_size, d_weight=args.d_weight)
     img_size = opt_solver.get_image_size()
     opt_engine = constrained_opt.Constrained_OPT(opt_solver, batch_size=args.batch_size, n_iters=args.n_iters, topK=args.top_k,
-                                           morph_steps=args.morph_steps, interp=args.interp)
+                                           morph_steps=args.morph_steps, interp=args.interp, isAverage=args.average)
 
     # initialize application
     app = QApplication(sys.argv)

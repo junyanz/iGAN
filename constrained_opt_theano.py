@@ -9,16 +9,17 @@ from lib import utils
 
 
 class OPT_Solver():
-    def __init__(self, model, batch_size=32, d_weight=0.0):
+    def __init__(self, model, batch_size=32, nc=3, d_weight=0.0):
         self.model = model
         self.npx = model.npx
         self.nc = model.nc
         self.nz = model.nz
+        self.nc = model.nc
         self.model_name = model.model_name
         self.transform = model.transform
         self.transform_mask = model.transform_mask
         self.inverse_transform = model.inverse_transform
-        self.opt_model = self.def_invert(model, batch_size=batch_size, d_weight=d_weight)
+        self.opt_model = self.def_invert(model, batch_size=batch_size, d_weight=d_weight, nc=self.nc)
         self.batch_size = batch_size
 
     def get_image_size(self):
@@ -31,6 +32,8 @@ class OPT_Solver():
         results = _invert(im_c_t, mask_c_t, im_e_t, mask_e_t, z_i.astype(np.float32))
         [gx, cost, cost_all, rec_all, real_all, init_all, sum_e, sum_x_edge] = results
         gx_t = (255 * self.inverse_transform(gx, npx=self.npx, nc=self.nc)).astype(np.uint8)
+        if self.nc == 1:
+            gx_t = np.tile(gx_t, (1, 1, 1, 3))
         z_t = np.tanh(z.get_value()).copy()
         return gx_t, z_t, cost_all
 
@@ -59,9 +62,12 @@ class OPT_Solver():
         z_const.set_value(floatX(l))
 
     def gen_samples(self, z0):
-        return self.model.gen_samples(z0=z0)
+        samples = self.model.gen_samples(z0=z0)
+        if self.nc == 1:
+            samples = np.tile(samples, [1,1,1,3])
+        return samples
 
-    def def_invert(self, model, batch_size=1, d_weight=0.5, lr=0.1, b1=0.9, nz=100, use_bin=True):
+    def def_invert(self, model, batch_size=1, d_weight=0.5, nc=1, lr=0.1, b1=0.9, nz=100, use_bin=True):
         d_weight_r = sharedX(d_weight)
         x_c = T.tensor4()
         m_c = T.tensor4()
@@ -70,10 +76,13 @@ class OPT_Solver():
         z0 = T.matrix()
         z = sharedX(floatX(np_rng.uniform(-1., 1., size=(batch_size, nz))))
         gx = model.model_G(z)
-
-        mm_c = T.tile(m_c, (1, gx.shape[1], 1, 1))
-        color_all = T.mean(T.sqr(gx - x_c) * mm_c, axis=(1, 2, 3)) / (T.mean(m_c, axis=(1, 2, 3)) + sharedX(1e-5))
-        gx_edge = HOGNet.get_hog(gx, use_bin)
+        if nc == 1:
+            gx3 = 2 * T.tile(gx, (1, 3, 1, 1))-1
+        else:
+            gx3 = gx
+        mm_c = T.tile(m_c, (1, gx3.shape[1], 1, 1))
+        color_all = T.mean(T.sqr(gx3 - x_c) * mm_c, axis=(1, 2, 3)) / (T.mean(m_c, axis=(1, 2, 3)) + sharedX(1e-5))
+        gx_edge = HOGNet.get_hog(gx3, use_bin)
         x_edge = HOGNet.get_hog(x_e, use_bin)
         mm_e = T.tile(m_e, (1, gx_edge.shape[1], 1, 1))
         sum_e = T.sum(T.abs_(mm_e))

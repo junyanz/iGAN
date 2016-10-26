@@ -5,7 +5,7 @@ from lib import utils
 from PyQt4.QtCore import *
 
 class Constrained_OPT(QThread):
-    def __init__(self, opt_solver, batch_size=32, n_iters=25, topK=16, morph_steps=16, interp='linear'):
+    def __init__(self, opt_solver, batch_size=32, n_iters=25, topK=16, morph_steps=16, interp='linear', isAverage=False):
         QThread.__init__(self)
         self.nz = 100
         self.opt_solver = opt_solver
@@ -14,7 +14,7 @@ class Constrained_OPT(QThread):
         self.batch_size = batch_size
         self.morph_steps = morph_steps  # number of intermediate frames
         self.interp = interp  # interpolation method
-
+        self.useAverage = isAverage  # use average mode
         # data
         self.z_seq = None     # sequence of latent vector
         self.img_seq = None   # sequence of images
@@ -33,7 +33,7 @@ class Constrained_OPT(QThread):
         self.init_constraints()  # initialize
         self.init_z()            # initialize latent vectors
         self.just_fixed=True
-
+        self.weights = None
 
     def is_fixed(self):
         return self.just_fixed
@@ -139,15 +139,21 @@ class Constrained_OPT(QThread):
                 return None
             else:
                 image_id = image_id % self.current_ims.shape[0]
-                return self.current_ims[image_id]
+                if self.useAverage and self.weights is not None:
+                    # get averages
+                    return utils.average_image(self.current_ims, self.weights)
+                else:
+                    return self.current_ims[image_id]
         else:
-
             if self.img_seq is None:
                 return None
             else:
                 frame_id = frame_id % self.img_seq.shape[1]
                 image_id = image_id % self.img_seq.shape[0]
-                return  self.img_seq[image_id, frame_id]
+                if self.useAverage and self.weights is not None:
+                    return utils.average_image(self.img_seq[:,frame_id,...], self.weights)
+                else:
+                    return self.img_seq[image_id, frame_id]
 
     def get_images(self, frame_id):
         if self.to_update:
@@ -216,6 +222,10 @@ class Constrained_OPT(QThread):
         else:
             order = self.order
         self.current_ims = gx_t[order]
+        # compute weights
+        cost_weights = cost_all[order]
+        self.weights = np.exp(-0.5 * (cost_weights-np.mean(cost_weights))/np.std(cost_weights))
+        print 'weights', self.weights
         self.current_zs = z_t[order]
 
         self.emit(SIGNAL('update_image'))
@@ -254,6 +264,7 @@ class Constrained_OPT(QThread):
         self.to_set_constraints = False
         self.iter_total = 0
         self.iter_count = 0
+        self.weights =None
 
 
 

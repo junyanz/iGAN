@@ -136,6 +136,8 @@ for epoch in range(niter+niter_decay):
     f_log.write(json.dumps(dict(zip(log_fields, log))) + '\n')
     f_log.flush()
 
+    n_epochs += 1
+
     # generate samples and write webpage
     samples = np.asarray(_gen(sample_zmb))
     samples_t = train_dcgan_utils.inverse_transform(samples, npx=npx, nc=nc)
@@ -146,7 +148,6 @@ for epoch in range(niter+niter_decay):
     html.save()
 
     # save models
-    n_epochs += 1
     if n_epochs > niter:
         lrt.set_value(floatX(lrt.get_value() - args.lr / niter_decay))
     if n_epochs % args.save_freq == 0:

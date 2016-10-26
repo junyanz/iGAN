@@ -23,7 +23,7 @@ Download the sketch datasets (e.g. sketch_shoes_64)
   ```
 
 
-  * Install [h5py](http://docs.h5py.org/en/latest/build.html) and　[Fuel](https://fuel.readthedocs.io/en/latest/)
+  * Install [h5py](http://docs.h5py.org/en/latest/build.html) and [Fuel](https://fuel.readthedocs.io/en/latest/)
   ```bash
   sudo pip install h5py
   sudo pip install git+git://github.com/mila-udem/fuel.git
@@ -37,13 +37,13 @@ Download the sketch datasets (e.g. sketch_shoes_64)
   * Define the model parameters in `train_dcgan_config.py` file.
   * Train a DCGAN  model:
   ```bash
-  THEANO_FLAGS='device=gpu1, floatX=float32, nvcc.fastmath=True' python train_dcgan.py --model_name shoes_64
+  THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python train_dcgan.py --model_name shoes_64
     ```
   By default, the training code will create a directory `./cache/`, and store all the generated samples, webpage, and model checkpoints in the directory.
 
   * Estimate the batchnorm parameters for DCGAN:
   ```bash
-  THEANO_FLAGS='device=gpu1, floatX=float32, nvcc.fastmath=True' python batchnorm_dcgan.py --model_name shoes_64
+  THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python batchnorm_dcgan.py --model_name shoes_64
   ```
   * Pack the model:
   ```bash
@@ -73,7 +73,7 @@ bash models/scripts/download_alexnet.sh conv4
 <!-- ## Train a DCGAN model on your own dataset -->
 
 ## Train a generative model (e.g. VAE) based on Theano
-The current design of our software follows: ui python class (e.g. `gui_draw.py`) => constrained optimization python class (`constrained_opt_theano.py`) => deep generative model python class (e.g. `dcgan_theano.py`). To incorporate your own generative model, you need to create a new python class (e.g. `vae_theano.py`) under `model_def` folder with the same interface of `dcgan_theano.py`, and specify `--model_type vae_theano` in the command line.
 
+The current design of our software follows: ui python class (e.g. `gui_draw.py`) => python wrapper for constrained optimization  (`constrained_opt.py`) => Theano implementation of constrained optimization (`constrained_opt_theano.py`) => deep generative model implemented in Theano (e.g. `dcgan_theano.py`). To incorporate your own generative model, you need to create a new python class (e.g. `vae_theano.py`) under `model_def` folder with the same interface of `dcgan_theano.py`, and specify `--model_type vae_theano` in the command line.
 ## Train a generative model based on Tensorflow
 we are working on a tensorflow based optimization class (i.e. `constrained_opt_tensorflow.py`) now. Once the code is released, you can create your own tensorflow model class (e.g. `dcgan_tensorflow.py`) under `model_def` folder.

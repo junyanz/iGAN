@@ -95,6 +95,13 @@ def CVShow(im, im_name='', wait=1):
     cv2.waitKey(wait)
     return im_show
 
+def average_image(imgs, weights):
+    im_weights = np.tile(weights[:,np.newaxis, np.newaxis, np.newaxis], (1, imgs.shape[1], imgs.shape[2], imgs.shape[3]))
+    imgs_f = imgs.astype(np.float32)
+    weights_norm = np.mean(im_weights)
+    average_f = np.mean(imgs_f * im_weights, axis=0) /weights_norm
+    average = average_f.astype(np.uint8)
+    return average
 
 def mkdirs(paths):
     if isinstance(paths, list) and not isinstance(paths, str):

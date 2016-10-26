@@ -8,7 +8,7 @@ class UISketch:
         self.nc = 3
         self.img = np.zeros((img_size, img_size, self.nc), np.uint8)
         self.mask = np.zeros((img_size, img_size, 1), np.uint8)
-        self.width = 1
+        self.width = 1 # [hack]
 
     def update(self, points, color):
         num_pnts = len(points)
