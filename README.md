@@ -117,21 +117,22 @@ Type `python iGAN_main.py --help` for a complete list of the arguments. Here we 
 * `--model_type`: currently only supports dcgan_theano.
 * `--model_file`: the file that stores the generative model; If not specified, `model_file='./models/%s.%s' % (model_name, model_type)`
 * `--top_k`: the number of the candidate results being displayed
-
+* `--average`: show average image in the main window. Inspired by [AverageExplorer](https://people.eecs.berkeley.edu/~junyanz/projects/averageExplorer/), average image is a weighted average of multiple generated results, with the weights reflecting user-indicated importance.
 
 ## Dataset and Training
 See [README](./train_dcgan/README.md).
 
 
 ## TODO
-* Support Python3.
-* Add 128x128 models.
-* Add the DCGAN model training script.  
+* ~~Support Python3.~~
+* ~~Add image datasets.~~
+* ~~Support average image mode.~~
+* ~~Add the DCGAN model training script.~~  
 * Add the script for projecting an image to the latent vector `z`.
+* Add 128x128 models.
+* Support sketch models for sketching guidance
 * Support other deep learning frameworks (e.g. Tensorflow).
 * Support other deep generative models (e.g. variational autoencoder).
-* Support sketch models for sketching guidance, inspired by [ShadowDraw](http://vision.cs.utexas.edu/projects/shadowdraw/shadowdraw.html).
-* Support average image mode for visual data exploration, inspired by [AverageExplorer](https://people.eecs.berkeley.edu/~junyanz/projects/averageExplorer/).
 * Support image morphing mode.
 * Support image editing mode.
 
