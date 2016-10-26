@@ -59,11 +59,13 @@ def gen(_z, _params, n_layers=3, n_f=128, init_sz=4, nc=3):
         hin = hs[-1]
         hout = relu(batchnorm(deconv(hin, w, subsample=(2, 2), border_mode=(2, 2)), g=g, b=b))
         hs.append(hout)
+    x = deconv(hs[-1], _params[-1], subsample=(2, 2), border_mode=(2, 2))
+
     if nc == 3:
-        x = tanh(deconv(hs[-1], _params[-1], subsample=(2, 2), border_mode=(2, 2)))
+        x_f = tanh(x)
     if nc == 1:
-        x = sigmoid(deconv(hs[-1], _params[-1], subsample=(2, 2), border_mode=(2, 2)))
-    return x
+        x_f = sigmoid(x)
+    return x_f
 
 
 def discrim(_x, _params, n_layers=3):

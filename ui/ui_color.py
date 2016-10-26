@@ -4,11 +4,11 @@ import cv2
 
 
 class UIColor:
-    def __init__(self, npx, scale):
-        self.npx = npx
+    def __init__(self, img_size, scale):
+        self.img_size = img_size
         self.scale = float(scale)
-        self.img = np.zeros((npx, npx, 3), np.uint8)
-        self.mask = np.zeros((npx, npx, 1), np.uint8)
+        self.img = np.zeros((img_size, img_size, 3), np.uint8)
+        self.mask = np.zeros((img_size, img_size, 1), np.uint8)
         self.width = int(2*scale)
 
     def update(self, points, color):
@@ -30,5 +30,5 @@ class UIColor:
         return self.width
 
     def reset(self):
-        self.img = np.zeros((self.npx, self.npx, 3), np.uint8)
-        self.mask = np.zeros((self.npx, self.npx, 1), np.uint8)
+        self.img = np.zeros((self.img_size, self.img_size, 3), np.uint8)
+        self.mask = np.zeros((self.img_size, self.img_size, 1), np.uint8)

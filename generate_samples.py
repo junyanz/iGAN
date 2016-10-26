@@ -30,7 +30,7 @@ if __name__ == '__main__':
     model_class = locate('model_def.%s' % args.model_type)
     model = model_class.Model(model_name=args.model_name, model_file=args.model_file)
     # generate samples
-    samples = model.gen_samples(z0=None, n=196, batch_size=49, nz=100,  use_transform=True)
+    samples = model.gen_samples(z0=None, n=196, batch_size=49, use_transform=True)
     # generate grid visualization
     im_vis = utils.grid_vis(samples, 14, 14)
     # write to the disk

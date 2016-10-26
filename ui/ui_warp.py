@@ -3,11 +3,11 @@ import cv2
 from lib import utils
 
 class UIWarp():
-    def __init__(self, npx, scale):
-        self.npx = npx
+    def __init__(self, img_size, scale):
+        self.img_size = img_size
         self.scale = scale
-        self.img = np.zeros((npx, npx, 3), np.uint8)
-        self.mask = np.zeros((npx, npx, 1), np.uint8)
+        self.img = np.zeros((img_size, img_size, 3), np.uint8)
+        self.mask = np.zeros((img_size, img_size, 1), np.uint8)
         self.init_width = 24
         self.width = int(self.init_width * self.scale)
         self.points1 = []
@@ -20,10 +20,10 @@ class UIWarp():
     def CropPatch(self, pnt, width):
         [x_c,y_c] = pnt
         w =  width / 2.0
-        x1 = int(np.clip(x_c-w, 0, self.npx-1))
-        y1 = int(np.clip(y_c-w, 0, self.npx-1))
-        x2 = int(np.clip(x_c+w, 0, self.npx-1))
-        y2 = int(np.clip(y_c+w, 0, self.npx-1))
+        x1 = int(np.clip(x_c - w, 0, self.img_size - 1))
+        y1 = int(np.clip(y_c - w, 0, self.img_size - 1))
+        x2 = int(np.clip(x_c + w, 0, self.img_size - 1))
+        y2 = int(np.clip(y_c + w, 0, self.img_size - 1))
         return [x1,y1,x2,y2]
 
     def AddPoint(self, pos, im):
@@ -35,7 +35,7 @@ class UIWarp():
         self.points2.append(pnt)
         self.widths.append(self.width)
 
-        self.im = cv2.resize(im, (self.npx, self.npx))#*255).astype(np.uint8)
+        self.im = cv2.resize(im, (self.img_size, self.img_size))#*255).astype(np.uint8)
         self.ims.append(self.im.copy())
         self.activeId = len(self.points1) - 1
         print('set activeId =%d' % self.activeId)
@@ -49,8 +49,8 @@ class UIWarp():
             return None
 
     def update(self, pos):
-        self.img = np.zeros((self.npx, self.npx, 3), np.uint8)
-        self.mask = np.zeros((self.npx, self.npx, 1), np.uint8)
+        self.img = np.zeros((self.img_size, self.img_size, 3), np.uint8)
+        self.mask = np.zeros((self.img_size, self.img_size, 1), np.uint8)
 
         print('uiWarp: update %d' % self.activeId)
         if self.activeId >= 0:
@@ -76,8 +76,8 @@ class UIWarp():
         return self.img, self.mask
 
     def get_edge_constraints(self):
-        img = np.zeros((self.npx, self.npx, 3), np.uint8)
-        mask = np.zeros((self.npx, self.npx, 1), np.uint8)
+        img = np.zeros((self.img_size, self.img_size, 3), np.uint8)
+        mask = np.zeros((self.img_size, self.img_size, 1), np.uint8)
         return img, mask
 
 
@@ -95,5 +95,5 @@ class UIWarp():
         self.widths = []
         self.ims = []
         self.width = int(self.init_width * self.scale)
-        self.img = np.zeros((self.npx, self.npx, 3), np.uint8)
-        self.mask = np.zeros((self.npx, self.npx, 1), np.uint8)
+        self.img = np.zeros((self.img_size, self.img_size, 3), np.uint8)
+        self.mask = np.zeros((self.img_size, self.img_size, 1), np.uint8)

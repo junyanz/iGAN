@@ -86,8 +86,6 @@ def print_numpy(x, val=True, shp=False):
 
 
 def CVShow(im, im_name='', wait=1):
-    print_numpy(im)
-    # im_show = im
     if len(im.shape) >= 3 and im.shape[2] == 3:
         im_show = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
     else:

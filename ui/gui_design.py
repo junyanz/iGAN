@@ -5,12 +5,12 @@ from . import gui_vis
 import time
 
 class GUIDesign(QWidget):
-    def __init__(self, opt_engine, batch_size=32, n_iters=25, win_size=320, topK=16):
+    def __init__(self, opt_engine, batch_size=32, n_iters=25, win_size=320, img_size=64, topK=16, model_name='tmp'):
         # draw the layout
         QWidget.__init__(self)
         morph_steps = 16
         self.opt_engine = opt_engine
-        self.drawWidget = gui_draw.GUIDraw(opt_engine, batch_size=batch_size, n_iters=n_iters, nps=win_size, topK=topK)
+        self.drawWidget = gui_draw.GUIDraw(opt_engine, batch_size=batch_size, n_iters=n_iters, win_size=win_size, img_size=img_size, topK=topK)
         self.drawWidget.setFixedSize(win_size, win_size)
         vbox = QVBoxLayout()
 
@@ -45,13 +45,17 @@ class GUIDesign(QWidget):
         bhbox.addWidget(self.bColor)
         bhbox.addWidget(self.bEdge)
         bhbox.addWidget(self.bWarp)
-        self.bPlay = QPushButton('&Play')
-        self.bPlay.setToolTip('Play a morphing sequence between the previous result and the current result')
-        self.bFix = QPushButton('&Fix')
-        self.bFix.setToolTip('Use the current result as a constraint')
 
-        bhbox.addWidget(self.bPlay)
-        bhbox.addWidget(self.bFix)
+        self.bEdit = QCheckBox('&Edits')
+        self.bEdit.setChecked(True)
+        self.colorPush  = QPushButton()  # to visualize the selected color
+        self.colorPush.setFixedWidth(20)
+        self.colorPush.setFixedHeight(20)
+        self.colorPush.setStyleSheet("background-color: green")
+        bhbox.addWidget(self.colorPush)
+        bhbox.addWidget(self.bEdit)
+
+
         vbox.addLayout(bhbox)
 
         hbox = QHBoxLayout()
@@ -59,7 +63,7 @@ class GUIDesign(QWidget):
         self.visWidgetBox = QGroupBox()
         self.visWidgetBox.setTitle('Candidate Results')
         vbox_t = QVBoxLayout()
-        self.visWidget = gui_vis.GUI_VIS(opt_engine=opt_engine, grid_size=None, topK=topK, nps=win_size)
+        self.visWidget = gui_vis.GUI_VIS(opt_engine=opt_engine, grid_size=None, topK=topK, nps=win_size, model_name=model_name)
         vbox_t.addWidget(self.visWidget)
         self.visWidgetBox.setLayout(vbox_t)
         vbox2 = QVBoxLayout()
@@ -67,27 +71,34 @@ class GUIDesign(QWidget):
         vbox2.addWidget(self.visWidgetBox)
         vbox2.addStretch(1)
 
+        self.bPlay = QPushButton('&Play')
+        self.bPlay.setToolTip('Play a morphing sequence between the previous result and the current result')
+        self.bFix = QPushButton('&Fix')
+        self.bFix.setToolTip('Use the current result as a constraint')
+
 
         self.bRestart = QPushButton("&Restart")
         self.bRestart.setToolTip('Restart the system')
         self.bSave = QPushButton("&Save")
         self.bSave.setToolTip('Save the current result.')
-        self.bEdit = QCheckBox('&Edits')
-        self.bEdit.setChecked(True)
+
         chbox = QHBoxLayout()
+        chbox.addWidget(self.bPlay)
+        chbox.addWidget(self.bFix)
         chbox.addWidget(self.bRestart)
         chbox.addWidget(self.bSave)
-        chbox.addWidget(self.bEdit)
+
+
         vbox2.addLayout(chbox)
 
         hbox.addLayout(vbox2)
         self.setLayout(hbox)
         mainWidth = self.visWidget.winWidth + win_size + 60
         mainHeight = self.visWidget.winHeight + 100
+
         self.setGeometry(0, 0, mainWidth, mainHeight)
-        # print 'mainWidth = %d, mainHeight = %d' % (mainWidth, mainHeight)
-        # print 'width = %d, height = %d' % (self.width(), self.height())
         self.setFixedSize(self.width(), self.height()) # fix window size
+        # connect signals and slots
         self.connect(self.opt_engine, SIGNAL('update_image'), self.drawWidget.update_im)
         self.connect(self.opt_engine, SIGNAL('update_image'), self.visWidget.update_vis)
         self.connect(self.visWidget, SIGNAL('update_image_id'), self.drawWidget.set_image_id)
@@ -102,6 +113,8 @@ class GUIDesign(QWidget):
         self.bColor.toggled.connect(self.drawWidget.use_color)
         self.bEdge.toggled.connect(self.drawWidget.use_edge)
         self.bWarp.toggled.connect(self.drawWidget.use_warp)
+        self.colorPush.clicked.connect(self.drawWidget.change_color)
+        self.connect(self.drawWidget, SIGNAL('update_color'), self.colorPush.setStyleSheet)
         self.bPlay.clicked.connect(self.play)
         self.bFix.clicked.connect(self.fix)
         self.bRestart.clicked.connect(self.reset)
@@ -136,6 +149,9 @@ class GUIDesign(QWidget):
         if event.key() == Qt.Key_Q:
             print('time spent = %3.3f' % (time.time()-self.start_t))
             self.close()
+
+        if event.key() == Qt.Key_F:
+            self.fix()
 
         if event.key() == Qt.Key_E:
             isChecked = self.bEdit.isChecked()

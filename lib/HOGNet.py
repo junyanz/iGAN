@@ -61,13 +61,10 @@ compMask = theano.function(inputs=[m],outputs=m_b)
 print('%.2f seconds to compile [compMask] functions' % (time() - t))
 
 def comp_mask(masks):
-    # masks = np.asarray(compMask(masks))
-    # masks = masks > 1e-5
-    # fix
-    masks = np.zeros((1, 1, 8, 8), dtype=bool)
+    masks = np.asarray(compMask(masks))
+    masks = masks > 1e-5
     return masks
 
-#
 if __name__ == "__main__":
     import numpy as np
     test_img = np.zeros((1, 1, 64, 64), np.float32)

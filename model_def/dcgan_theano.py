@@ -17,8 +17,9 @@ class Model(object):
     def __init__(self, model_name, model_file):
         self.model_name = model_name
         self.model_file = model_file
+        self.nz = 100 # [hack] hard-coded
         self.npx, self.n_layers, self.n_f, self.nc = getattr(dcgan_theano_config, model_name)()
-        self.disc_params, self.gen_params, self.disc_batchnorm, self.gen_batchnorm = get_params(model_file, self.n_layers, self.n_f)
+        self.disc_params, self.gen_params, self.disc_batchnorm, self.gen_batchnorm = get_params(model_file, n_layers=self.n_layers, n_f=self.n_f, nz=self.nz, nc=self.nc)
         # compile gen
         self._gen = self.def_gen(self.gen_params, self.gen_batchnorm, self.n_layers, self.n_f)
 
@@ -37,25 +38,23 @@ class Model(object):
         print('%.2f seconds to compile _gen function' % (time() - t))
         return _gen
 
-    def gen_samples(self, z0=None, n=32, batch_size=32, nz=100, use_transform=True):
+    def gen_samples(self, z0=None, n=32, batch_size=32, use_transform=True):
         assert n % batch_size == 0
 
         samples = []
 
         if z0 is None:
-            z0 = np_rng.uniform(-1., 1., size=(n, nz))
+            z0 = np_rng.uniform(-1., 1., size=(n, self.nz))
         else:
             n = len(z0)
             batch_size = max(n, 64)
         n_batches = int(np.ceil(n/float(batch_size)))
-
         for i in range(n_batches):
-            zmb = floatX(z0[batch_size * i:min(len(z0), batch_size * (i + 1)), :])
+            zmb = floatX(z0[batch_size * i:min(n, batch_size * (i + 1)), :])
             xmb = self._gen(zmb)
             samples.append(xmb)
 
         samples = np.concatenate(samples, axis=0)
-
         if use_transform:
             samples = self.inverse_transform(samples, npx=self.npx, nc=self.nc)
             samples = (samples * 255).astype(np.uint8)
@@ -79,25 +78,6 @@ class Model(object):
             return 1.0 - x.reshape(-1, 1, npx, npx).transpose(0, 2, 3, 1)
 
 
-
-def get_params_old(model_file, n_layers, n_f, nz=100, nc=3):
-    print('LOADING...')
-    t = time()
-
-    disc_params = init_disc_params(n_f=n_f, n_layers=n_layers, nc=nc)
-    gen_params = init_gen_params(nz=nz, n_f=n_f, n_layers=n_layers, nc=nc)
-    # load the model
-    model = utils.PickleLoad(model_file)
-    print('load model from %s' % model_file)
-    set_model(disc_params, model['disc_params'])
-    set_model(gen_params, model['gen_params'])
-    # disc_batchnorm = model['disc_batchnorm']
-    # gen_batchnorm = model['gen_batchnorm']
-    disc_batchnorm, gen_batchnorm = model['postlearn_params']
-    disc_batchnorm = [sharedX(d) for d in disc_batchnorm]
-    gen_batchnorm = [sharedX(d) for d in gen_batchnorm]
-    print('%.2f seconds to load theano models' % (time() - t))
-    return disc_params, gen_params, disc_batchnorm, gen_batchnorm
 
 def get_params(model_file, n_layers, n_f, nz=100, nc=3):
     print('LOADING...')
@@ -183,7 +163,6 @@ def init_predict_params(nz=100, n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
 def init_disc_params(n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
     all_params = []
     dw0 = difn((n_f, nc, fs, fs), 'dw0')
-    # db0 = bias_ifn((n_f), 'db0')
     all_params.extend([dw0])#, db0])  # 2
 
     for n in range(n_layers):
@@ -214,7 +193,7 @@ def disc_test(_x, _params, _batchnorm, n_layers=3):
     y = sigmoid(T.dot(h, _params[-1]))
     return y
 
-def gen_test(_z, _params, _batchnorm, n_layers=3, n_f=128, init_sz=4, use_tanh=False):
+def gen_test(_z, _params, _batchnorm, n_layers=3, n_f=128, init_sz=4, nc=3, use_tanh=False):
     if use_tanh:
         _z= tanh(_z)
     [gw0, gg0, gb0] = _params[0:3]
@@ -231,5 +210,9 @@ def gen_test(_z, _params, _batchnorm, n_layers=3, n_f=128, init_sz=4, use_tanh=F
         s = _batchnorm[n + n_layers + 2]
         hout = relu(batchnorm(deconv(hin, w, subsample=(2, 2), border_mode=(2, 2)), u=u, s=s, g=g, b=b))
         hs.append(hout)
-    x = tanh(deconv(hs[-1], _params[-1], subsample=(2, 2), border_mode=(2, 2)))
-    return x
+    x = deconv(hs[-1], _params[-1], subsample=(2, 2), border_mode=(2, 2))
+    if nc == 3:
+        x_f = tanh(x)
+    if nc == 1:
+        x_f = sigmoid(x)
+    return x_f

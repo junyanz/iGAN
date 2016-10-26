@@ -7,7 +7,7 @@ from lib import utils
 
 
 class GUI_VIS(QWidget):
-    def __init__(self, opt_engine, topK=16, grid_size=None, nps=320):
+    def __init__(self, opt_engine, topK=16, grid_size=None, nps=320, model_name='tmp'):
         QWidget.__init__(self)
         self.topK = topK
         if grid_size is None:
@@ -23,7 +23,6 @@ class GUI_VIS(QWidget):
         self.winHeight = self.width * self.grid_size[1]
 
         self.setFixedSize(self.winWidth, self.winHeight)
-        model_name = opt_engine.model_name
         self.opt_engine = opt_engine
         self.frame_id = -1
         self.sr = save_result.SaveResult(model_name=model_name)

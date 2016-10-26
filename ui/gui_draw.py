@@ -10,29 +10,29 @@ from .ui_sketch import UISketch
 from .ui_warp import UIWarp
 
 class GUIDraw(QWidget):
-    def __init__(self, opt_engine, batch_size=32, n_iters=25, nps=320, topK=16, hash=None, hash_z=None):
+    def __init__(self, opt_engine, batch_size=32, n_iters=25, win_size=320, img_size=64, topK=16):
         QWidget.__init__(self)
         self.isPressed = False
         self.points = []
         self.topK = topK
         self.lastDraw = 0
         self.model = None
-        self.color = QColor(0, 0, 0)  # default black
+        self.color = QColor(0, 255, 0)  # default color red
+        self.prev_color = self.color
         self.opt_engine = opt_engine
-        npx = opt_engine.npx
         self.pos = None
-        self.nps = nps
-        self.scale = nps / float(npx)
+        self.nps = win_size
+        self.scale = win_size / float(img_size)
         self.brushWidth = int(2 * self.scale)
         self.show_nn = True
         self.type = 'color'
         self.show_ui = True
         self.uir = UIRecorder()
 
-        self.uiColor = UIColor(npx=npx, scale=self.scale)
-        self.uiSketch = UISketch(npx=npx, scale=self.scale)
-        self.uiWarp = UIWarp(npx=npx, scale=self.scale)
-        self.move(nps, nps)
+        self.uiColor = UIColor(img_size=img_size, scale=self.scale)
+        self.uiSketch = UISketch(img_size=img_size, scale=self.scale)
+        self.uiWarp = UIWarp(img_size=img_size, scale=self.scale)
+        self.move(win_size, win_size)
 
         self.movie = True
         self.frame_id = -1
@@ -55,11 +55,11 @@ class GUIDraw(QWidget):
         QApplication.processEvents()
 
     def update_ui(self):
-        if self.opt_engine.just_fixed:
+        if self.opt_engine.is_fixed():
             self.set_frame_id(-1)
             self.set_image_id(0)
             self.emit(SIGNAL('update_image_id'), 0)
-            self.opt_engine.just_fixed=False
+            self.opt_engine.update_fix()
         if self.type is 'color':
             self.uiColor.update(self.points, self.color)
         if self.type is 'edge':
@@ -96,20 +96,16 @@ class GUIDraw(QWidget):
         x = int(np.round(pnt.x()))
         y = int(np.round(pnt.y()))
         return QPoint(x, y)
-    #
-    # def update_beta(self, step):
-    #     beta_r = self.model[-1]
-    #     value = beta_r.get_value()
-    #     print('<before> beta=%5.5f' % beta_r.get_value())
-    #     value *= step
-    #     beta_r.set_value(value)
-    #     print('<after> beta=%5.5f' % beta_r.get_value())
-    #     # self.generate()
-    #     self.update()
+
+    def change_color(self):
+        color = QColorDialog.getColor(parent=self)
+        self.color = color
+        self.prev_color = color
+        self.emit(SIGNAL('update_color'), QString('background-color: %s' % color.name()))
+
 
     def get_image_id(self):
         return self.image_id
-        # return self.visNN.get_show_id()
 
     def get_frame_id(self):
         return self.frame_id
@@ -150,10 +146,7 @@ class GUIDraw(QWidget):
             if self.type is 'color':
                 ca = QColor(c.red(), c.green(), c.blue(), 127)
             if self.type is 'edge':
-                if self.color is Qt.white:
-                    ca = QColor(255, 255, 255, 127)
-                if self.color is Qt.black:
-                    ca = QColor(0, 0, 0, 127)
+                ca = QColor(0, 0, 0, 127)
             if self.type is 'warp':
                 ca = QColor(0, 0, 0, 127)
 
@@ -187,14 +180,11 @@ class GUIDraw(QWidget):
         if self.type is 'color':
             msg = 'coloring: (%d, %d, %d)' % (self.color.red(), self.color.green(), self.color.blue())
         if self.type is 'edge':
-            if self.color is Qt.black:
-                msg = 'sketching: add'
-            else:
-                msg = 'sketching: remove'
+            msg = 'sketching'
+
         if self.type is 'warp':
             msg = 'warping'
-        # if self.type is 'patch':
-            # msg = 'patch'
+
         painter.setPen(QColor(0, 0, 0))
         fontSz = 10
         border = 3
@@ -221,8 +211,6 @@ class GUIDraw(QWidget):
         if self.type is 'warp':
             self.brushWidth = self.uiWarp.update_width(d)
         self.update()
-        # if self.type is 'patch':
-            # self.brushWidth = self.uiPatch.update_width(d)
 
     def mousePressEvent(self, event):
         self.pos = self.round_point(event.pos())
@@ -236,16 +224,7 @@ class GUIDraw(QWidget):
 
         if event.button() == Qt.RightButton:
             if self.type is 'color':
-                # QColorDialog.move((0,0))
-                color = QColorDialog.getColor(parent=self)
-                self.color = color
-            #
-            # if self.type is 'edge':
-            #     if self.color is Qt.black:
-            #         self.color = Qt.white
-            #     else:
-            #         self.color = Qt.black
-            #     self.brushWidth = self.uiSketch.update_width(0, self.color)
+                self.change_color()
 
             if self.type is 'warp':
                 im = self.opt_engine.get_image(self.get_image_id(), self.get_frame_id())
@@ -295,9 +274,6 @@ class GUIDraw(QWidget):
 
     def fix_z(self):
         self.opt_engine.init_z(self.get_frame_id(), self.get_image_id())
-        # self.uiColor.reset()
-        # self.uiSketch.reset()
-        # self.uiWarp.reset()
 
     def morph_seq(self):
         print('generate morphing')
@@ -316,20 +292,23 @@ class GUIDraw(QWidget):
     def use_color(self):
         print('coloring')
         self.type = 'color'
-        self.color = QColor(255, 0, 0)
+        self.color = self.prev_color
+        self.emit(SIGNAL('update_color'), QString('background-color: %s' % self.color.name()))
         self.brushWidth = self.uiColor.update_width(0)
         self.update()
 
     def use_edge(self):
         print('sketching')
         self.type = 'edge'
-        self.color = Qt.black
+        self.color = QColor(128, 128, 128)
+        self.emit(SIGNAL('update_color'), QString('background-color: %s' % self.color.name()))
         self.brushWidth = self.uiSketch.update_width(0, self.color)
         self.update()
 
     def use_warp(self):
         self.type = 'warp'
-        self.color = Qt.black
+        self.color = QColor(128, 128, 128)
+        self.emit(SIGNAL('update_color'), QString('background-color: %s' % self.color.name()))
         self.brushWidth = self.uiWarp.update_width(0)
         print('warp brush: %d' % self.brushWidth)
         self.update()
