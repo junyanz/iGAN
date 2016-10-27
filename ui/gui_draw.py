@@ -3,40 +3,49 @@ import time
 import cv2
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+from lib import utils
+# from scipy import ndimage
 from .ui_recorder import UIRecorder
 from .ui_color import UIColor
 from .ui_sketch import UISketch
 from .ui_warp import UIWarp
 
 class GUIDraw(QWidget):
-    def __init__(self, opt_engine, batch_size=32, n_iters=25, win_size=320, img_size=64, topK=16):
+    def __init__(self, opt_engine, win_size=320, img_size=64, topK=16, useAverage=False, shadow=False):
         QWidget.__init__(self)
         self.isPressed = False
         self.points = []
         self.topK = topK
+        self.shadow = False
         self.lastDraw = 0
         self.model = None
-        self.color = QColor(0, 255, 0)  # default color red
-        self.prev_color = self.color
+        self.shadow = shadow
+        self.init_color(shadow)
         self.opt_engine = opt_engine
         self.pos = None
         self.nps = win_size
         self.scale = win_size / float(img_size)
         self.brushWidth = int(2 * self.scale)
         self.show_nn = True
-        self.type = 'color'
+        self.type = 'edge' if self.shadow else 'color'
         self.show_ui = True
-        self.uir = UIRecorder()
-
-        self.uiColor = UIColor(img_size=img_size, scale=self.scale)
-        self.uiSketch = UISketch(img_size=img_size, scale=self.scale)
-        self.uiWarp = UIWarp(img_size=img_size, scale=self.scale)
+        self.uir = UIRecorder(shadow=shadow)
+        nc = 1 if shadow else 3
+        self.uiColor = UIColor(img_size=img_size, scale=self.scale, nc=nc)
+        self.uiSketch = UISketch(img_size=img_size, scale=self.scale, nc=nc)
+        self.uiWarp = UIWarp(img_size=img_size, scale=self.scale, nc=nc)
+        self.img_size = img_size
         self.move(win_size, win_size)
-
+        self.useAverage = useAverage
+        if self.shadow:
+            self.setMouseTracking(True)
         self.movie = True
         self.frame_id = -1
         self.image_id = 0
+
+    def change_average_mode(self):
+        self.useAverage = ~self.useAverage
+        self.update()
 
     def update_opt_engine(self):
         if self.type in ['color', 'edge']:
@@ -97,11 +106,25 @@ class GUIDraw(QWidget):
         y = int(np.round(pnt.y()))
         return QPoint(x, y)
 
+    def init_color(self, shadow):
+        if shadow:
+            self.color = QColor(0, 0, 0)  # shadow mode: default color black
+        else:
+            self.color = QColor(0, 255, 0)  # default color red
+        self.prev_color = self.color
+
     def change_color(self):
-        color = QColorDialog.getColor(parent=self)
-        self.color = color
-        self.prev_color = color
-        self.emit(SIGNAL('update_color'), QString('background-color: %s' % color.name()))
+        if self.shadow:
+            if self.color == QColor(0, 0, 0):
+                self.color = QColor(255, 255, 255)
+            else:
+                self.color = QColor(0, 0, 0)
+        else:
+            color = QColorDialog.getColor(parent=self)
+            self.color = color
+
+        self.prev_color = self.color
+        self.emit(SIGNAL('update_color'), QString('background-color: %s' % self.color.name()))
 
 
     def get_image_id(self):
@@ -113,12 +136,32 @@ class GUIDraw(QWidget):
         print('get z from image %d, frame %d'%(self.get_image_id(), self.get_frame_id()))
         return self.opt_engine.get_z(self.get_image_id(), self.get_frame_id())
 
+    def shadow_image(self, img, pos):
+        if img is None:
+            return None
+        weighted_img = np.ones((img.shape[0], img.shape[1]), np.uint8)
+        x = int(pos.x() / self.scale)
+        y = int(pos.y() / self.scale)
+
+        weighted_img[y, x] = 0
+        dist_img = cv2.distanceTransform(weighted_img, distanceType=cv2.cv.CV_DIST_L2, maskSize=5).astype(np.float32)
+        dist_sigma = self.img_size/2.0
+        dist_img_f = np.exp(-dist_img / dist_sigma)
+        dist_img_f = np.tile(dist_img_f[..., np.newaxis], [1,1,3])
+        l = 0.25
+        img_f = img.astype(np.float32)
+        rst_f = (img_f * l + (1-l) * (img_f * dist_img_f + (1-dist_img_f)*255.0))
+        rst = rst_f.astype(np.uint8)
+        return rst
+
     def paintEvent(self, event):
         painter = QPainter()
         painter.begin(self)
         painter.fillRect(event.rect(), Qt.white)
         painter.setRenderHint(QPainter.Antialiasing)
-        im = self.opt_engine.get_image(self.get_image_id(), self.get_frame_id())
+        im = self.opt_engine.get_image(self.get_image_id(), self.get_frame_id(), self.useAverage)
+        if self.shadow and self.useAverage:
+            im = self.shadow_image(im, self.pos)
 
         if im is not None:
             bigim = cv2.resize(im, (self.nps, self.nps))
@@ -128,7 +171,10 @@ class GUIDraw(QWidget):
         # draw path
         if self.isPressed and self.type in ['color', 'edge'] and self.show_ui:
             if self.type is 'edge':
-                painter.setPen(QPen(Qt.gray, 10, Qt.DotLine, cap=Qt.RoundCap, join=Qt.RoundJoin))
+                if self.shadow:
+                    painter.setPen(QPen(self.color, 10,  cap=Qt.RoundCap, join=Qt.RoundJoin))
+                else:
+                    painter.setPen(QPen(Qt.gray, 10, Qt.DotLine, cap=Qt.RoundCap, join=Qt.RoundJoin))
             else:
                 painter.setPen(QPen(self.color, int(self.brushWidth), cap=Qt.RoundCap, join=Qt.RoundJoin))
 
@@ -223,7 +269,7 @@ class GUIDraw(QWidget):
             self.update()
 
         if event.button() == Qt.RightButton:
-            if self.type is 'color':
+            if self.type in ['edge', 'color']:# or self.type is 'edge':
                 self.change_color()
 
             if self.type is 'warp':
@@ -235,14 +281,14 @@ class GUIDraw(QWidget):
     def mouseMoveEvent(self, event):
         # print('mouse move', self.pos)
         self.pos = self.round_point(event.pos())
-        # print(self.pos)
         if self.isPressed:
             # point = event.pos()
             if self.type in ['color','edge']:
                 self.points.append(self.pos)
             self.update_ui()
             self.update_opt_engine()
-            self.update()
+            # self.update()
+        self.update()
             # print(point)
 
     def mouseReleaseEvent(self, event):
@@ -276,7 +322,6 @@ class GUIDraw(QWidget):
         self.opt_engine.init_z(self.get_frame_id(), self.get_image_id())
 
     def morph_seq(self):
-        print('generate morphing')
         self.frame_id=0
         num_frames = self.opt_engine.get_num_frames()
         print('show %d frames' % num_frames)
@@ -300,7 +345,7 @@ class GUIDraw(QWidget):
     def use_edge(self):
         print('sketching')
         self.type = 'edge'
-        self.color = QColor(128, 128, 128)
+        self.color = QColor(0, 0, 0) if self.shadow else QColor(128, 128, 128)
         self.emit(SIGNAL('update_color'), QString('background-color: %s' % self.color.name()))
         self.brushWidth = self.uiSketch.update_width(0, self.color)
         self.update()

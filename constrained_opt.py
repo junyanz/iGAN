@@ -1,20 +1,23 @@
+from __future__ import print_function
 from time import time
 from lib.rng import np_rng
 import numpy as np
+import sys
 from lib import utils
 from PyQt4.QtCore import *
+import cv2
 
 class Constrained_OPT(QThread):
-    def __init__(self, opt_solver, batch_size=32, n_iters=25, topK=16, morph_steps=16, interp='linear', isAverage=False):
+    def __init__(self, opt_solver, batch_size=32, n_iters=25, topK=16, morph_steps=16, interp='linear'):
         QThread.__init__(self)
         self.nz = 100
         self.opt_solver = opt_solver
         self.topK = topK
         self.max_iters = n_iters
+        self.fixed_iters = 150  # [hack] after 150 iterations, do not change the order of the results
         self.batch_size = batch_size
         self.morph_steps = morph_steps  # number of intermediate frames
         self.interp = interp  # interpolation method
-        self.useAverage = isAverage  # use average mode
         # data
         self.z_seq = None     # sequence of latent vector
         self.img_seq = None   # sequence of images
@@ -45,7 +48,6 @@ class Constrained_OPT(QThread):
         nz = self.nz
         n_sigma = 0.5
         self.iter_total = 0
-        print 'frame_id = %d, image_id = %d' % (frame_id, image_id)
         # set prev_z
         if self.z_seq is not None and image_id >= 0:
             image_id = image_id % self.z_seq.shape[0]
@@ -107,14 +109,14 @@ class Constrained_OPT(QThread):
                 im_c_f = im_c
             else:
                 im_c_f =  self.prev_im_c.copy()
-                mask_c3 = np.tile(mask_c, [1,1,3])
+                mask_c3 = np.tile(mask_c, [1,1, im_c.shape[2]])
                 np.copyto(im_c_f, im_c, where=mask_c3.astype(np.bool))  #[hack]
 
             if self.prev_im_e is None:
                 im_e_f = im_e
             else:
                 im_e_f = self.prev_im_e.copy()
-                mask_e3 = np.tile(mask_e, [1,1,3])
+                mask_e3 = np.tile(mask_e, [1,1,im_e.shape[2]])
                 np.copyto(im_e_f, im_e, where=mask_e3.astype(np.bool))
 
             return [im_c_f, mask_c_f, im_e_f, mask_e_f]
@@ -133,15 +135,15 @@ class Constrained_OPT(QThread):
         else:
             return None
 
-    def get_image(self, image_id, frame_id):
+
+    def get_image(self, image_id, frame_id, useAverage=False):
         if self.to_update:
             if self.current_ims is None or self.current_ims.size == 0:
                 return None
             else:
                 image_id = image_id % self.current_ims.shape[0]
-                if self.useAverage and self.weights is not None:
-                    # get averages
-                    return utils.average_image(self.current_ims, self.weights)
+                if useAverage and self.weights is not None:
+                    return utils.average_image(self.current_ims, self.weights)  # get averages
                 else:
                     return self.current_ims[image_id]
         else:
@@ -150,7 +152,7 @@ class Constrained_OPT(QThread):
             else:
                 frame_id = frame_id % self.img_seq.shape[1]
                 image_id = image_id % self.img_seq.shape[0]
-                if self.useAverage and self.weights is not None:
+                if useAverage and self.weights is not None:
                     return utils.average_image(self.img_seq[:,frame_id,...], self.weights)
                 else:
                     return self.img_seq[image_id, frame_id]
@@ -195,39 +197,38 @@ class Constrained_OPT(QThread):
                 self.iter_count += 1
 
             t_c = int(1000*(time()-t1))
-
-            if t_c > 0:
-                print('update one iteration: %d ms' % t_c)
+            print('update one iteration: %03d ms' % t_c, end='\r')
+            sys.stdout.flush()
             if t_c < time_to_wait:
                 self.msleep(time_to_wait-t_c)
 
 
     def update_invert(self, constraints):
         constraints_c = self.combine_constraints(constraints)
-        gx_t, z_t, cost_all= self.opt_solver.invert(constraints_c, self.z_const)
+        t=time()
+        gx_t, z_t, cost_all = self.opt_solver.invert(constraints_c, self.z_const)
+
         order = np.argsort(cost_all)
 
         if self.topK > 1:
             cost_sort = cost_all[order]
             thres_top =  2 * np.mean(cost_sort[0:min(int(self.topK / 2.0), len(cost_sort))])
-            ids = cost_sort < thres_top
+            ids = cost_sort - thres_top < 1e-10
             topK = np.min([self.topK, sum(ids)])
         else:
             topK = self.topK
 
         order = order[0:topK]
 
-        if self.iter_total < 150:
+        if self.iter_total < self.fixed_iters:
             self.order = order
         else:
             order = self.order
         self.current_ims = gx_t[order]
         # compute weights
         cost_weights = cost_all[order]
-        self.weights = np.exp(-0.5 * (cost_weights-np.mean(cost_weights))/np.std(cost_weights))
-        print 'weights', self.weights
+        self.weights = np.exp(-(cost_weights-np.mean(cost_weights)) / (np.std(cost_weights)+1e-10))
         self.current_zs = z_t[order]
-
         self.emit(SIGNAL('update_image'))
 
     def gen_morphing(self, interp='linear', n_steps=8):

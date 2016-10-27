@@ -3,10 +3,11 @@ import cv2
 from lib import utils
 
 class UIWarp():
-    def __init__(self, img_size, scale):
+    def __init__(self, img_size, scale, nc=3):
         self.img_size = img_size
         self.scale = scale
-        self.img = np.zeros((img_size, img_size, 3), np.uint8)
+        self.nc = nc
+        self.img = np.zeros((img_size, img_size, self.nc), np.uint8)
         self.mask = np.zeros((img_size, img_size, 1), np.uint8)
         self.init_width = 24
         self.width = int(self.init_width * self.scale)
@@ -49,7 +50,7 @@ class UIWarp():
             return None
 
     def update(self, pos):
-        self.img = np.zeros((self.img_size, self.img_size, 3), np.uint8)
+        self.img = np.zeros((self.img_size, self.img_size, self.nc), np.uint8)
         self.mask = np.zeros((self.img_size, self.img_size, 1), np.uint8)
 
         print('uiWarp: update %d' % self.activeId)
@@ -63,12 +64,16 @@ class UIWarp():
         for pnt1, pnt2 in zip(self.points1, self.points2):
             w = int(max(1, self.width / self.scale))
             [x1,y1,x2,y2] = self.CropPatch(pnt1, w)
+            [x1n, y1n, x2n, y2n] = self.CropPatch(pnt2, w)
             im = self.ims[count]
-            patch = im[y1:y2,x1:x2,:].copy()
-            utils.print_numpy(patch)
-            [x1,y1,x2,y2] = self.CropPatch(pnt2, w)
-            self.img[y1:y2,x1:x2,:] = patch
-            self.mask[y1:y2,x1:x2,:] = 255
+            if self.nc == 3:
+                patch = im[y1:y2,x1:x2,:].copy()
+                self.img[y1n:y2n,x1n:x2n,:] = patch
+                self.mask[y1n:y2n,x1n:x2n,:] = 255
+            else:
+                patch = im[y1:y2, x1:x2, [0]].copy()
+                self.img[y1n:y2n, x1n:x2n] = patch
+                self.mask[y1n:y2n, x1n:x2n] = 255
             count += 1
 
 
@@ -76,10 +81,7 @@ class UIWarp():
         return self.img, self.mask
 
     def get_edge_constraints(self):
-        img = np.zeros((self.img_size, self.img_size, 3), np.uint8)
-        mask = np.zeros((self.img_size, self.img_size, 1), np.uint8)
-        return img, mask
-
+        return self.img, self.mask
 
     def update_width(self, d):
         self.width = min(256, max(32, self.width + d * 4 * self.scale))
@@ -95,5 +97,5 @@ class UIWarp():
         self.widths = []
         self.ims = []
         self.width = int(self.init_width * self.scale)
-        self.img = np.zeros((self.img_size, self.img_size, 3), np.uint8)
+        self.img = np.zeros((self.img_size, self.img_size, self.nc), np.uint8)
         self.mask = np.zeros((self.img_size, self.img_size, 1), np.uint8)

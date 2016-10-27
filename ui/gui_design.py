@@ -5,12 +5,14 @@ from . import gui_vis
 import time
 
 class GUIDesign(QWidget):
-    def __init__(self, opt_engine, batch_size=32, n_iters=25, win_size=320, img_size=64, topK=16, model_name='tmp'):
+    def __init__(self, opt_engine, win_size=320,
+                 img_size=64, topK=16, model_name='tmp', useAverage=False, shadow=False):
         # draw the layout
         QWidget.__init__(self)
         morph_steps = 16
         self.opt_engine = opt_engine
-        self.drawWidget = gui_draw.GUIDraw(opt_engine, batch_size=batch_size, n_iters=n_iters, win_size=win_size, img_size=img_size, topK=topK)
+        self.drawWidget = gui_draw.GUIDraw(opt_engine, win_size=win_size,
+                                           img_size=img_size, topK=topK, useAverage=useAverage, shadow=shadow)
         self.drawWidget.setFixedSize(win_size, win_size)
         vbox = QVBoxLayout()
 
@@ -36,7 +38,12 @@ class GUIDesign(QWidget):
         self.bEdge.setToolTip('The sketching brush allows the user to outline the shape or add fine details.')
         self.bWarp = QRadioButton("Warping")
         self.bWarp.setToolTip('The warping brush allows the user to modify the shape more explicitly.')
-        self.bColor.toggle()
+        if shadow:
+            self.bEdge.toggle()
+            self.bColor.setDisabled(True)
+            self.bWarp.setDisabled(True)
+        else:
+            self.bColor.toggle()
         bhbox =  QHBoxLayout()
         bGroup = QButtonGroup(self)
         bGroup.addButton(self.bColor)
@@ -51,7 +58,10 @@ class GUIDesign(QWidget):
         self.colorPush  = QPushButton()  # to visualize the selected color
         self.colorPush.setFixedWidth(20)
         self.colorPush.setFixedHeight(20)
-        self.colorPush.setStyleSheet("background-color: green")
+        if shadow:
+            self.colorPush.setStyleSheet("background-color: black")
+        else:
+            self.colorPush.setStyleSheet("background-color: green")
         bhbox.addWidget(self.colorPush)
         bhbox.addWidget(self.bEdit)
 
@@ -142,9 +152,15 @@ class GUIDesign(QWidget):
         print('time spent = %3.3f' % (time.time()-self.start_t))
         self.visWidget.save()
 
+    def change_average(self):
+        self.drawWidget.change_average_mode()
+
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_R:
            self.reset()
+
+        if event.key() == Qt.Key_A:
+            self.change_average()
 
         if event.key() == Qt.Key_Q:
             print('time spent = %3.3f' % (time.time()-self.start_t))
@@ -154,12 +170,7 @@ class GUIDesign(QWidget):
             self.fix()
 
         if event.key() == Qt.Key_E:
-            isChecked = self.bEdit.isChecked()
-            if isChecked:
-                self.bEdit.setChecked(False)
-            else:
-                self.bEdit.setChecked(True)
-            self.show_edits()
+            self.drawWidget.show_edits()
 
         if event.key() == Qt.Key_P:
             self.play()
