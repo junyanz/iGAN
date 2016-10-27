@@ -44,7 +44,7 @@ class GUIDraw(QWidget):
         self.image_id = 0
 
     def change_average_mode(self):
-        self.useAverage = ~self.useAverage
+        self.useAverage = not self.useAverage
         self.update()
 
     def update_opt_engine(self):
