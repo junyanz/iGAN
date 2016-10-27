@@ -55,6 +55,8 @@ class GUIDesign(QWidget):
 
         self.bEdit = QCheckBox('&Edits')
         self.bEdit.setChecked(True)
+        # self.bAverage = QCheckBox('&AE')
+        # self.bAverage.setChecked(useAverage)
         self.colorPush  = QPushButton()  # to visualize the selected color
         self.colorPush.setFixedWidth(20)
         self.colorPush.setFixedHeight(20)
@@ -64,6 +66,7 @@ class GUIDesign(QWidget):
             self.colorPush.setStyleSheet("background-color: green")
         bhbox.addWidget(self.colorPush)
         bhbox.addWidget(self.bEdit)
+        # bhbox.addWidget(self.bAverage)
 
 
         vbox.addLayout(bhbox)
@@ -130,6 +133,7 @@ class GUIDesign(QWidget):
         self.bRestart.clicked.connect(self.reset)
         self.bSave.clicked.connect(self.save)
         self.bEdit.toggled.connect(self.show_edits)
+        # self.bAverage.toggled.connect(self.drawWidget.change_average_mode)
         self.start_t = time.time()
 
     def reset(self):
