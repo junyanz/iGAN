@@ -2,12 +2,12 @@ import numpy as np
 import cv2
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import save_result
+from . import save_result
 from lib import utils
 
 
 class GUI_VIS(QWidget):
-    def __init__(self, opt_engine, topK=16, grid_size=None, nps=320):
+    def __init__(self, opt_engine, topK=16, grid_size=None, nps=320, model_name='tmp'):
         QWidget.__init__(self)
         self.topK = topK
         if grid_size is None:
@@ -15,8 +15,6 @@ class GUI_VIS(QWidget):
             self.grid_size = (self.n_grid, self.n_grid) # (width, height)
         else:
             self.grid_size = grid_size
-        # print grid_size
-
         self.select_id = 0
         self.ims = None
         self.vis_results = None
@@ -25,7 +23,6 @@ class GUI_VIS(QWidget):
         self.winHeight = self.width * self.grid_size[1]
 
         self.setFixedSize(self.winWidth, self.winHeight)
-        model_name = opt_engine.model_name
         self.opt_engine = opt_engine
         self.frame_id = -1
         self.sr = save_result.SaveResult(model_name=model_name)
@@ -63,7 +60,7 @@ class GUI_VIS(QWidget):
         if event.button() == Qt.LeftButton:
             x_select = np.floor(pos.x() / float(self.width))
             y_select = np.floor(pos.y() / float(self.width))
-            new_id = y_select * self.grid_size[0] + x_select
+            new_id = int(y_select * self.grid_size[0] + x_select)
             print('pos=(%d,%d) (x,y)=(%d,%d) image_id=%d' % (int(pos.x()), int(pos.y()), x_select, y_select, new_id))
             if new_id != self.select_id:
                 self.select_id = new_id
@@ -101,8 +98,6 @@ class GUI_VIS(QWidget):
 
         ims_show = []
         n_imgs = self.ims.shape[0]
-        # print 'ims_shape', self.ims.shape
-        # print 'number of images = %d' % n_imgs
         for n in range(n_imgs):
             # im = ims[n]
             im_s = cv2.resize(self.ims[n], (self.width, self.width), interpolation=cv2.INTER_CUBIC)
@@ -110,11 +105,9 @@ class GUI_VIS(QWidget):
                 t = 3  # thickness
                 cv2.rectangle(im_s, (t, t), (self.width - t, self.width - t), (0, 255, 0), t)
             im_s = im_s[np.newaxis, ...]
-            # print 'im_s_shape', im_s.shape
             ims_show.append(im_s)
         if ims_show:
             ims_show = np.concatenate(ims_show, axis=0)
-            g_tmp = utils.color_grid_vis(ims_show, (self.grid_size[1], self.grid_size[0])) # (nh, nw)
-            # print 'g_image_shape', g_tmp.shape
+            g_tmp = utils.grid_vis(ims_show, self.grid_size[1], self.grid_size[0]) # (nh, nw)
             self.vis_results = g_tmp.copy()
             self.update()

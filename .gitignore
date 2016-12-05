@@ -1,11 +1,12 @@
 # Byte-compiled / optimized / DLL files
+unused/
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.hdf5
 # C extensions
 *.so
-
+cache/
 # added
 *.dcgan_theano
 .idea/

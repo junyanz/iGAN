@@ -30,7 +30,7 @@ cd iGAN
 ```
 * Download the model. (See `Model Zoo` for details):
 ``` bash
-bash ./models/scripts/download_dcgan_model.sh outdoor_64.dcgan_theano
+bash ./models/scripts/download_dcgan_model.sh outdoor_64
 ```
 
 * Run the python script:
@@ -64,6 +64,13 @@ sudo pip install dominate
 * GPU + CUDA + cuDNN:
 The code is tested on GTX Titan X + CUDA 7.5 + cuDNN 5.  Here are the tutorials on how to install [CUDA](http://www.r-tutor.com/gpu-computing/cuda-installation/cuda7.5-ubuntu) and [cuDNN](http://askubuntu.com/questions/767269/how-can-i-install-cudnn-on-ubuntu-16-04). A decent GPU is required to run the system at real-time. [**Warning**] If you run the program on a gpu server, you need to use a remote desktop software (e.g. VNC), which may introduce display artifacts and latency problem.
 
+## Python3
+For `Python3` users, you need to replace `pip` with `pip3`:
+* PyQt4 with Python3:
+``` bash
+sudo apt-get install python3-pyqt4
+```
+* OpenCV3 with Python3: see the installation [instruction](http://www.pyimagesearch.com/2015/07/20/install-opencv-3-0-and-python-3-4-on-ubuntu/).
 
 
 ## Interface:
@@ -88,15 +95,15 @@ See [[Youtube]](https://youtu.be/9c4z6YsBGQ0?t=2m18s) at 2:18s for the interacti
 
 
 ## Model Zoo:
-Download the theano DCGAN model (e.g. outdoor_64.dcgan_theano). Before using our system, please check out the random real images vs. DCGAN generated samples to see which kind of images that a model can produce.
+Download the theano DCGAN model (e.g. outdoor_64). Before using our system, please check out the random real images vs. DCGAN generated samples to see which kind of images that a model can produce.
 
 ``` bash
-bash ./models/scripts/download_dcgan_model.sh outdoor_64.dcgan_theano
+bash ./models/scripts/download_dcgan_model.sh outdoor_64
 ```
-* [ourdoor_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/outdoor_64.dcgan_theano) (64x64): trained on 150K landscape images from MIT [Places](http://places.csail.mit.edu/) dataset [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/outdoor_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/outdoor_64_dcgan.png)].
-* [church_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/church_64.dcgan_theano) (64x64): trained on 126k church images from the [LSUN](http://lsun.cs.princeton.edu/2016/) challenge [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/church_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/church_64_dcgan.png)].
-* [shoes_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/shoes_64.dcgan_theano) (64x64): trained on 50K shoes images collected by [Yu and Grauman](http://vision.cs.utexas.edu/projects/finegrained/utzap50k/) [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_dcgan.png)].
-* [handbag_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/handbag_64.dcgan_theano) (64x64): trained on 137K handbag images downloaded from Amazon [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_dcgan.png)].
+* [ourdoor_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models_dev/theano_dcgan/outdoor_64.dcgan_theano) (64x64): trained on 150K landscape images from MIT [Places](http://places.csail.mit.edu/) dataset [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/outdoor_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/outdoor_64_dcgan.png)].
+* [church_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models_dev/theano_dcgan/church_64.dcgan_theano) (64x64): trained on 126k church images from the [LSUN](http://lsun.cs.princeton.edu/2016/) challenge [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/church_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/church_64_dcgan.png)].
+* [shoes_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models_dev/theano_dcgan/shoes_64.dcgan_theano) (64x64): trained on 50K shoes images collected by [Yu and Grauman](http://vision.cs.utexas.edu/projects/finegrained/utzap50k/) [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_dcgan.png)].
+* [handbag_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models_dev/theano_dcgan/handbag_64.dcgan_theano) (64x64): trained on 137K handbag images downloaded from Amazon [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_dcgan.png)].
 
 We provide a simple script to generate samples from a pre-trained DCGAN model. You can run this script to test if Theano, CUDA, cuDNN are configured properly before running our interface.
 ```bash
@@ -110,21 +117,22 @@ Type `python iGAN_main.py --help` for a complete list of the arguments. Here we 
 * `--model_type`: currently only supports dcgan_theano.
 * `--model_file`: the file that stores the generative model; If not specified, `model_file='./models/%s.%s' % (model_name, model_type)`
 * `--top_k`: the number of the candidate results being displayed
+* `--average`: show average image in the main window. Inspired by [AverageExplorer](https://people.eecs.berkeley.edu/~junyanz/projects/averageExplorer/), average image is a weighted average of multiple generated results, with the weights reflecting user-indicated importance.
 
+## Dataset and Training
+See [README](./train_dcgan/README.md).
 
-## Model Traing and Datasets
-See `train_dcgan` under [dev](https://github.com/junyanz/iGAN/tree/dev/train_dcgan) branch.
 
 ## TODO
-* ~~Support Python3.~~ (See [dev](https://github.com/junyanz/iGAN/tree/dev) branch)
-* ~~Add the DCGAN model training script.~~  (See [dev](https://github.com/junyanz/iGAN/tree/dev) branch)
-* ~~Add datasets.~~ (See [dev](https://github.com/junyanz/iGAN/tree/dev) branch)
-* Add 128x128 models.
+* ~~Support Python3.~~
+* ~~Add image datasets.~~
+* ~~Support average image mode.~~
+* ~~Add the DCGAN model training script.~~
+* ~~Support sketch models for sketching guidance.~~ 
 * Add the script for projecting an image to the latent vector `z`.
+* Add 128x128 models.
 * Support other deep learning frameworks (e.g. Tensorflow).
 * Support other deep generative models (e.g. variational autoencoder).
-* Support sketch models for sketching guidance, inspired by [ShadowDraw](http://vision.cs.utexas.edu/projects/shadowdraw/shadowdraw.html).
-* Support average image mode for visual data exploration, inspired by [AverageExplorer](https://people.eecs.berkeley.edu/~junyanz/projects/averageExplorer/).
 * Support image morphing mode.
 * Support image editing mode.
 

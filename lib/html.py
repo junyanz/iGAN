@@ -1,6 +1,5 @@
 import dominate
 from dominate.tags import *
-from pdb import set_trace as st
 import os
 
 
@@ -44,9 +43,9 @@ class HTML:
 
 
 if __name__ == '__main__':
-    html = HTML('/home/eecs/junyanz/public_html/projects/dcgan/web/test/', 'test_html')
+    html = HTML('web/', 'test_html')
     html.add_header('hello world')
-    # html.add_table()
+
     ims = []
     txts = []
     links = []
