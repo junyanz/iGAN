@@ -21,17 +21,17 @@ class Model(object):
         self.npx, self.n_layers, self.n_f, self.nc = getattr(dcgan_theano_config, model_name)()
         self.disc_params, self.gen_params, self.disc_batchnorm, self.gen_batchnorm = get_params(model_file, n_layers=self.n_layers, n_f=self.n_f, nz=self.nz, nc=self.nc)
         # compile gen
-        self._gen = self.def_gen(self.gen_params, self.gen_batchnorm, self.n_layers, self.n_f)
+        self._gen = self.def_gen(self.gen_params, self.gen_batchnorm, n_layers=self.n_layers, n_f=self.n_f, nc=self.nc)
 
     def model_G(self, z):  # z => x
-        return gen_test(z, self.gen_params, self.gen_batchnorm, self.n_layers, self.n_f, use_tanh=True)
+        return gen_test(z, self.gen_params, self.gen_batchnorm, n_layers=self.n_layers, n_f=self.n_f, nc=self.nc, use_tanh=True)
 
     def model_D(self, x):  # x => 0/1
         return disc_test(x, self.disc_params, self.disc_batchnorm, n_layers=self.n_layers)
 
-    def def_gen(self, gen_params, gen_pl, n_layers, n_f):
+    def def_gen(self, gen_params, gen_pl, n_layers, n_f, nc):
         z = T.matrix()
-        gx = gen_test(z, gen_params, gen_pl, n_layers=n_layers, n_f=n_f, use_tanh=False)
+        gx = gen_test(z, gen_params, gen_pl, n_layers=n_layers, n_f=n_f, nc=nc, use_tanh=False)
         print('COMPILING...')
         t = time()
         _gen = theano.function([z], gx)
