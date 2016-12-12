@@ -9,8 +9,10 @@ __pycache__/
 cache/
 # added
 *.dcgan_theano
+*.pkl
 .idea/
 web/
+
 
 # Distribution / packaging
 .Python

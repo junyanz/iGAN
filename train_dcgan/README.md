@@ -45,6 +45,14 @@ Download the sketch datasets (e.g. sketch_shoes_64)
   ```bash
   THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python batchnorm_dcgan.py --model_name shoes_64
   ```
+  * (Optionally) Train an inverting model to predict `z` from `x`:
+  ```bash
+  THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python train_predict_z.py --model_name shoes_64
+  ```
+  * (Optionally) Estaimate the batchnorm parameters for the inverting model:
+  ```bash
+  THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python batchnorm_predict_z.py --model_name shoes_64
+  ```
   * Pack the model:
   ```bash
   python pack_model.py --model_name shoes_64 --output_model shoes_64.dcgan_theano

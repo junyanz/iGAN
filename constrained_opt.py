@@ -5,7 +5,7 @@ import numpy as np
 import sys
 from lib import utils
 from PyQt4.QtCore import *
-import cv2
+
 
 class Constrained_OPT(QThread):
     def __init__(self, opt_solver, batch_size=32, n_iters=25, topK=16, morph_steps=16, interp='linear'):

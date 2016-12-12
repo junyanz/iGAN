@@ -9,7 +9,8 @@ from lasagne.utils import floatX
 import os
 from lib.theano_utils import sharedX
 from lib import utils
-model_dir = '../models/'
+pkg_dir = os.path.dirname(os.path.abspath(__file__))
+model_dir = os.path.join(pkg_dir, '../models/')
 
 def build_model(x=None, layer='fc8', shape=(None, 3, 227, 227), up_scale=4):
     net = {'data': InputLayer(shape=shape, input_var=x)}
@@ -141,7 +142,7 @@ def transform_im(x, npx=64, nc=3):
     else:
         x1 = T.tile(x, [1,1,1,3]) * sharedX(255.0)  #[hack] to-be-tested
 
-    mean_channel = np.load('../lib/ilsvrc_2012_mean.npy').mean(1).mean(1)
+    mean_channel = np.load(os.path.join(pkg_dir, 'ilsvrc_2012_mean.npy')).mean(1).mean(1)
     mean_im = mean_channel[np.newaxis,:,np.newaxis,np.newaxis]
     mean_im = floatX(np.tile(mean_im, [1,1, npx, npx]))
     x2 = x1[:, [2,1,0], :,:]
