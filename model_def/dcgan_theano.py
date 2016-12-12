@@ -13,21 +13,27 @@ from lib.rng import np_rng
 import numpy as np
 from . import dcgan_theano_config
 
+
 class Model(object):
-    def __init__(self, model_name, model_file):
+    def __init__(self, model_name, model_file, use_predict=False):
         self.model_name = model_name
         self.model_file = model_file
         self.nz = 100 # [hack] hard-coded
         self.npx, self.n_layers, self.n_f, self.nc = getattr(dcgan_theano_config, model_name)()
-        self.disc_params, self.gen_params, self.disc_batchnorm, self.gen_batchnorm = get_params(model_file, n_layers=self.n_layers, n_f=self.n_f, nz=self.nz, nc=self.nc)
+        self.disc_params, self.gen_params, self.predict_params, \
+            self.disc_batchnorm, self.gen_batchnorm, self.predict_batchnorm \
+            = get_params(model_file, n_layers=self.n_layers, n_f=self.n_f, nz=self.nz, nc=self.nc)
         # compile gen
         self._gen = self.def_gen(self.gen_params, self.gen_batchnorm, n_layers=self.n_layers, n_f=self.n_f, nc=self.nc)
 
-    def model_G(self, z):  # z => x
+    def model_G(self, z):  # generative model z => x
         return gen_test(z, self.gen_params, self.gen_batchnorm, n_layers=self.n_layers, n_f=self.n_f, nc=self.nc, use_tanh=True)
 
-    def model_D(self, x):  # x => 0/1
+    def model_D(self, x):  # discriminative model: x => 0/1
         return disc_test(x, self.disc_params, self.disc_batchnorm, n_layers=self.n_layers)
+
+    def model_P(self, x):  # predictive model: x => z
+        return predict_test(x, self.predict_params, self.predict_batchnorm, n_layers=self.n_layers)
 
     def def_gen(self, gen_params, gen_pl, n_layers, n_f, nc):
         z = T.matrix()
@@ -85,17 +91,21 @@ def get_params(model_file, n_layers, n_f, nz=100, nc=3):
 
     disc_params = init_disc_params(n_f=n_f, n_layers=n_layers, nc=nc)
     gen_params = init_gen_params(nz=nz, n_f=n_f, n_layers=n_layers, nc=nc)
+    predict_params = init_predict_params(nz=nz, n_f=n_f, n_layers=n_layers)
     # load the model
     model = utils.PickleLoad(model_file)
     print('load model from %s' % model_file)
     set_model(disc_params, model['disc_params'])
     set_model(gen_params, model['gen_params'])
+    set_model(predict_params, model['predict_params'])
     disc_batchnorm = model['disc_batchnorm']
     gen_batchnorm = model['gen_batchnorm']
+    predict_batchnorm = model['predict_batchnorm']
     disc_batchnorm = [sharedX(d) for d in disc_batchnorm]
     gen_batchnorm = [sharedX(d) for d in gen_batchnorm]
+    predict_batchnorm = [sharedX(d) for d in predict_batchnorm]
     print('%.2f seconds to load theano models' % (time() - t))
-    return disc_params, gen_params, disc_batchnorm, gen_batchnorm
+    return disc_params, gen_params, predict_params, disc_batchnorm, gen_batchnorm, predict_batchnorm
 
 
 def set_model(params, params_values):
@@ -216,3 +226,19 @@ def gen_test(_z, _params, _batchnorm, n_layers=3, n_f=128, init_sz=4, nc=3, use_
     if nc == 1:
         x_f = sigmoid(x)
     return x_f
+
+
+def predict_test(_x, _params, _batchnorm, n_layers=3):
+    w = _params[0]
+    h0 = lrelu(dnn_conv(_x, w, subsample=(2, 2), border_mode=(2, 2)))
+    hs = [h0]
+    for n in range(n_layers):
+        hin = hs[-1]
+        w, g, b = _params[1 + 3 * n:1 + 3 * (n + 1)]
+        u = _batchnorm[n]
+        s = _batchnorm[n + n_layers]
+        hout = lrelu(batchnorm(dnn_conv(hin, w, subsample=(2, 2), border_mode=(2, 2)), u=u, s=s, g=g, b=b))
+        hs.append(hout)
+    h = T.flatten(hs[-1], 2)
+    y = tanh(T.dot(h, _params[-1]))
+    return y

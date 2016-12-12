@@ -38,9 +38,9 @@ if __name__ == '__main__':
 
     # initialize model and constrained optimization problem
     model_class = locate('model_def.%s' % args.model_type)
-    model_G = model_class.Model(model_name=args.model_name, model_file=args.model_file)
+    model = model_class.Model(model_name=args.model_name, model_file=args.model_file)
     opt_class = locate('constrained_opt_%s' % args.framework)
-    opt_solver = opt_class.OPT_Solver(model_G, batch_size=args.batch_size, d_weight=args.d_weight)
+    opt_solver = opt_class.OPT_Solver(model, batch_size=args.batch_size, d_weight=args.d_weight)
     img_size = opt_solver.get_image_size()
     opt_engine = constrained_opt.Constrained_OPT(opt_solver, batch_size=args.batch_size, n_iters=args.n_iters, topK=args.top_k,
                                                  morph_steps=args.morph_steps, interp=args.interp)

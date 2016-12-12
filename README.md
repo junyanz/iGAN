@@ -124,9 +124,24 @@ To use the interface, download the model `hed_shoes_64` and run the following sc
 ```bash
 THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_main.py --model_name hed_shoes_64 --shadow --average
 ```
+
 ## Dataset and Training
 See [README](./train_dcgan/README.md).
 
+## Projecting an Image onto Latent Space
+<img src='pics/predict.jpg' width=800>
+
+We provide a script to project an image into latent space (i.e. `x->z`):
+* Download the pre-trained AlexNet model (`conv4`):
+```bash
+bash models/scripts/download_alexnet.sh conv4
+```
+* Run the following script with a model and an input image. (e.g. model: `shoes_64.dcgan_theano`, and input image `./pics/shoes_test.png`)
+```bash
+THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_predict.py --model_name shoes_64 --input_image ./pics/shoes_test.png --solver cnn_opt
+```
+* Check the result saved in `./pics/shoes_test_cnn_opt.png`
+* We provide three methods: `opt` for optimization method; `cnn` for feed-forward network method (fastest); `cnn_opt` hybrid of the previous methods (default and best). Type `python iGAN_predict.py --help` for a complete list of the arguments.
 
 ## TODO
 * ~~Support Python3.~~
@@ -134,7 +149,7 @@ See [README](./train_dcgan/README.md).
 * ~~Support average image mode.~~
 * ~~Add the DCGAN model training script.~~  
 * ~~Support sketch models for sketching guidance.~~
-* Add the script for projecting an image to the latent vector `z`.
+* ~~Add the script for projecting an image to the latent vector `z`.~~
 * Add 128x128 models.
 * Support other deep learning frameworks (e.g. Tensorflow).
 * Support other deep generative models (e.g. variational autoencoder).

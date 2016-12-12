@@ -5,8 +5,6 @@ from lib import updates, HOGNet
 from lib.rng import np_rng
 from lib.theano_utils import floatX, sharedX
 import numpy as np
-from lib import utils
-
 
 class OPT_Solver():
     def __init__(self, model, batch_size=32, d_weight=0.0):
@@ -22,6 +20,7 @@ class OPT_Solver():
         self.hog = HOGNet.HOGNet(use_bin=True, NO=8, BS=BS, nc=self.nc)
         self.opt_model = self.def_invert(model, batch_size=batch_size, d_weight=d_weight, nc=self.nc)
         self.batch_size = batch_size
+
     def get_image_size(self):
         return self.npx
 
@@ -29,17 +28,9 @@ class OPT_Solver():
         [_invert, z_updates, z, beta_r, z_const] = self.opt_model
         constraints_t  = self.preprocess_constraints(constraints)
         [im_c_t, mask_c_t, im_e_t, mask_e_t] = constraints_t # [im_c_t, mask_c_t, im_e_t, mask_e_t]
-        # print('color image')
-        # utils.print_numpy(im_c_t, val=True, shp=True)
-        # print('color mask')
-        # utils.print_numpy(mask_c_t, val=True, shp=True)
-        # print('edge image')
-        # utils.print_numpy(im_e_t, val=True, shp=True)
-        # print('edge mask')
-        # utils.print_numpy(mask_e_t, val=True, shp=True)
-        # t = time()
+
         results = _invert(im_c_t, mask_c_t, im_e_t, mask_e_t, z_i.astype(np.float32))
-        # print('inverting time = %03d' % (time()-t))
+
         [gx, cost, cost_all, rec_all, real_all, init_all, sum_e, sum_x_edge] = results
         gx_t = (255 * self.inverse_transform(gx, npx=self.npx, nc=self.nc)).astype(np.uint8)
         if self.nc == 1:
