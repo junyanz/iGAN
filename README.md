@@ -146,7 +146,7 @@ THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_predi
 ## Script without UI
 <img src='pics/script_result.png' width=1000>
 
-We also provide a standard alone script that should work without UI. Given user constraints (i.e. a color map, a color mask and an edge map), the script generates multiple images that mostly satisfy the user constraints. See `python iGAN_script.py --help` for more details.
+We also provide a standalone script that should work without UI. Given user constraints (i.e. a color map, a color mask and an edge map), the script generates multiple images that mostly satisfy the user constraints. See `python iGAN_script.py --help` for more details.
 ```bash
 THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_script.py --model_name outdoor_64
 ```
@@ -159,7 +159,7 @@ THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_scrip
 * ~~Add the DCGAN model training script.~~  
 * ~~Support sketch models for sketching guidance.~~
 * ~~Add the script for projecting an image to the latent vector `z`.~~
-* ~~Add a standard alone script without UI.~~
+* ~~Add a standalone script without UI.~~
 * Add 128x128 models.
 * Support other deep learning frameworks (e.g. Tensorflow).
 * Support other deep generative models (e.g. variational autoencoder).
