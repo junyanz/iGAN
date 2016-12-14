@@ -5,7 +5,7 @@ import numpy as np
 import sys
 from lib import utils
 from PyQt4.QtCore import *
-
+import cv2
 
 class Constrained_OPT(QThread):
     def __init__(self, opt_solver, batch_size=32, n_iters=25, topK=16, morph_steps=16, interp='linear'):
@@ -79,6 +79,11 @@ class Constrained_OPT(QThread):
 
     def save_constraints(self):
         [im_c, mask_c, im_e, mask_e] = self.combine_constraints(self.constraints)
+        # write image
+        # im_c2 = cv2.cvtColor(im_c, cv2.COLOR_RGB2BGR)
+        # cv2.imwrite('input_color_image.png', im_c2)
+        # cv2.imwrite('input_color_mask.png', mask_c)
+        # cv2.imwrite('input_edge_map.png', im_e)
         self.prev_im_c = im_c.copy()
         self.prev_mask_c = mask_c.copy()
         self.prev_im_e = im_e.copy()
@@ -179,6 +184,9 @@ class Constrained_OPT(QThread):
         else:
             return self.img_seq.shape[1]
 
+    def get_current_results(self):
+        return self.current_ims
+
     def run(self):  # main function
         time_to_wait = 33 # 33 millisecond
         while (1):
@@ -202,10 +210,8 @@ class Constrained_OPT(QThread):
             if t_c < time_to_wait:
                 self.msleep(time_to_wait-t_c)
 
-
     def update_invert(self, constraints):
         constraints_c = self.combine_constraints(constraints)
-        t=time()
         gx_t, z_t, cost_all = self.opt_solver.invert(constraints_c, self.z_const)
 
         order = np.argsort(cost_all)

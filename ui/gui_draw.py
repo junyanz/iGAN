@@ -132,6 +132,7 @@ class GUIDraw(QWidget):
 
     def get_frame_id(self):
         return self.frame_id
+
     def get_z(self):
         print('get z from image %d, frame %d'%(self.get_image_id(), self.get_frame_id()))
         return self.opt_engine.get_z(self.get_image_id(), self.get_frame_id())
@@ -205,14 +206,11 @@ class GUIDraw(QWidget):
                 painter.drawEllipse(pnt, w, w)
 
         if self.type is 'warp' and self.show_ui:
-            # print 'paint warp brush'
             color = Qt.green
             w = 10
             painter.setPen(QPen(color, w, Qt.DotLine, cap=Qt.RoundCap, join=Qt.RoundJoin))  # ,)
             pnt1 = self.uiWarp.StartPoint()
-            # print 'start_point', pnt1
             if pnt1 is not None:
-                # print 'paint warp brush 2'
                 pnt1f = QPointF(pnt1[0]*self.scale, pnt1[1]*self.scale)
                 pnt2f = QPointF(self.pos.x(), self.pos.y())
                 painter.drawLine(pnt1f, pnt2f)
@@ -279,17 +277,13 @@ class GUIDraw(QWidget):
             self.update()
 
     def mouseMoveEvent(self, event):
-        # print('mouse move', self.pos)
         self.pos = self.round_point(event.pos())
         if self.isPressed:
-            # point = event.pos()
             if self.type in ['color','edge']:
                 self.points.append(self.pos)
             self.update_ui()
             self.update_opt_engine()
-            # self.update()
         self.update()
-            # print(point)
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton and self.isPressed:
@@ -311,12 +305,10 @@ class GUIDraw(QWidget):
 
 
     def update_frame(self, dif):
-        # frame_id_old = self.frame_id
         num_frames = self.opt_engine.get_num_frames()
         if num_frames > 0:
             self.frame_id = (self.frame_id+dif) % num_frames
             print("show frame id = %d"%self.frame_id)
-            # self.update()
 
     def fix_z(self):
         self.opt_engine.init_z(self.get_frame_id(), self.get_image_id())

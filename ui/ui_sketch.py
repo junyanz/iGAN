@@ -16,6 +16,9 @@ class UISketch:
     def update(self, points, color):
         num_pnts = len(points)
         c = 255 -  int(color.red())
+        if c > 0:
+            c = 255
+
         for i in range(0, num_pnts - 1):
             pnt1 = (int(points[i].x()/self.scale), int(points[i].y()/self.scale))
             pnt2 = (int(points[i + 1].x()/self.scale), int(points[i + 1].y()/self.scale))
