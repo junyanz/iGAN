@@ -2,6 +2,11 @@
 [[Project]](http://www.eecs.berkeley.edu/~junyanz/projects/gvm/) [[Youtube]](https://youtu.be/9c4z6YsBGQ0)   [[Paper]](https://arxiv.org/pdf/1609.03552v2.pdf)  
 A research prototype developed by UC Berkeley and Adobe CTL.  
 
+Latest developement:  
+[[pix2pix]](https://github.com/phillipi/pix2pix): Torch implementation for learning a mapping from input images to output images.  
+[[CycleGAN]](https://github.com/junyanz/CycleGAN): Torch implementation for learning an image-to-image translation (i.e. pix2pix) without input-output pairs.
+
+
 <img src='pics/demo.gif' width=320>
 
 ## Overview
