@@ -97,13 +97,19 @@ def get_params(model_file, n_layers, n_f, nz=100, nc=3):
     print('load model from %s' % model_file)
     set_model(disc_params, model['disc_params'])
     set_model(gen_params, model['gen_params'])
-    set_model(predict_params, model['predict_params'])
+
+    if 'predict_params' in model:
+        set_model(predict_params, model['predict_params'])
     disc_batchnorm = model['disc_batchnorm']
     gen_batchnorm = model['gen_batchnorm']
-    predict_batchnorm = model['predict_batchnorm']
+    if 'predict_batchnorm' in model:
+        predict_batchnorm = model['predict_batchnorm']
+        predict_batchnorm = [sharedX(d) for d in predict_batchnorm]
+    else:
+        predict_batchnorm = None
     disc_batchnorm = [sharedX(d) for d in disc_batchnorm]
     gen_batchnorm = [sharedX(d) for d in gen_batchnorm]
-    predict_batchnorm = [sharedX(d) for d in predict_batchnorm]
+
     print('%.2f seconds to load theano models' % (time() - t))
     return disc_params, gen_params, predict_params, disc_batchnorm, gen_batchnorm, predict_batchnorm
 
