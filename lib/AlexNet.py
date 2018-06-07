@@ -12,15 +12,16 @@ from lib import utils
 pkg_dir = os.path.dirname(os.path.abspath(__file__))
 model_dir = os.path.join(pkg_dir, '../models/')
 
+
 def build_model(x=None, layer='fc8', shape=(None, 3, 227, 227), up_scale=4):
     net = {'data': InputLayer(shape=shape, input_var=x)}
     net['data_s'] = Upscale2DLayer(net['data'], up_scale)
     net['conv1'] = Conv2DLayer(
-            net['data_s'],
-            num_filters=96,
-            filter_size=(11, 11),
-            stride=4,
-            nonlinearity=lasagne.nonlinearities.rectify)
+        net['data_s'],
+        num_filters=96,
+        filter_size=(11, 11),
+        stride=4,
+        nonlinearity=lasagne.nonlinearities.rectify)
 
     if layer is 'conv1':
         return net
@@ -108,43 +109,43 @@ def build_model(x=None, layer='fc8', shape=(None, 3, 227, 227), up_scale=4):
 
     # fc6
     net['fc6'] = DenseLayer(
-            net['pool5'], num_units=4096,
-            nonlinearity=lasagne.nonlinearities.rectify)
+        net['pool5'], num_units=4096,
+        nonlinearity=lasagne.nonlinearities.rectify)
     if layer is 'fc6':
         return net
 
     # fc7
     net['fc7'] = DenseLayer(
-            net['fc6'],
-            num_units=4096,
-            nonlinearity=lasagne.nonlinearities.rectify)
+        net['fc6'],
+        num_units=4096,
+        nonlinearity=lasagne.nonlinearities.rectify)
     if layer is 'fc7':
         return net
 
     # fc8
     net['fc8'] = DenseLayer(
-            net['fc7'],
-            num_units=1000,
-            nonlinearity=lasagne.nonlinearities.softmax)
+        net['fc7'],
+        num_units=1000,
+        nonlinearity=lasagne.nonlinearities.softmax)
     if layer is 'fc8':
         # st()
         return net
+
 
 def load_model(net, layer='fc8'):
     model_values = utils.PickleLoad(os.path.join(model_dir, 'caffe_reference_%s.pkl' % layer))
     lasagne.layers.set_all_param_values(net[layer], model_values)
 
 
-
 def transform_im(x, npx=64, nc=3):
     if nc == 3:
         x1 = (x + sharedX(1.0)) * sharedX(127.5)
     else:
-        x1 = T.tile(x, [1,1,1,3]) * sharedX(255.0)  #[hack] to-be-tested
+        x1 = T.tile(x, [1, 1, 1, 3]) * sharedX(255.0)  # [hack] to-be-tested
 
     mean_channel = np.load(os.path.join(pkg_dir, 'ilsvrc_2012_mean.npy')).mean(1).mean(1)
-    mean_im = mean_channel[np.newaxis,:,np.newaxis,np.newaxis]
-    mean_im = floatX(np.tile(mean_im, [1,1, npx, npx]))
-    x2 = x1[:, [2,1,0], :,:]
+    mean_im = mean_channel[np.newaxis, :, np.newaxis, np.newaxis]
+    mean_im = floatX(np.tile(mean_im, [1, 1, npx, npx]))
+    x2 = x1[:, [2, 1, 0], :, :]
     y = x2 - mean_im
     return y

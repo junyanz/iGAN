@@ -5,13 +5,8 @@ from lib.ops import batchnorm, deconv
 from lib.theano_utils import floatX, sharedX
 from lib import utils
 
-import theano
 import theano.tensor as T
 import cv2
-from lib.theano_utils import floatX
-from lib.rng import np_rng
-import numpy as np
-
 
 
 relu = activations.Rectify()
@@ -24,17 +19,18 @@ difn = inits.Normal(scale=0.02)
 gain_ifn = inits.Normal(loc=1., scale=0.02)
 bias_ifn = inits.Constant(c=0.)
 
+
 def save_image(im, filepath):
     tmp = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
     cv2.imwrite(filepath, tmp)
+
 
 def save_model(params, model_path):
     utils.PickleSave(model_path, [param.get_value() for param in params])
 
 
-
 def set_model(params, params_values):
-  for p, v in zip(params, params_values):
+    for p, v in zip(params, params_values):
         p.set_value(v)
 
 
@@ -43,10 +39,12 @@ def load_model(params, model_path):
     set_model(params, param_values)
     return
 
+
 def load_batchnorm(model_path):
     bn = utils.PickleLoad(model_path)
     bn_params = [sharedX(b) for b in bn]
     return bn_params
+
 
 def gen(_z, _params, n_layers=3, n_f=128, init_sz=4, nc=3):
     [gw0, gg0, gb0] = _params[0:3]
@@ -82,7 +80,6 @@ def discrim(_x, _params, n_layers=3):
     return y
 
 
-
 def transform(x, nc=3):
     if nc == 3:
         return floatX(x).transpose(0, 3, 1, 2) / 127.5 - 1.
@@ -90,13 +87,11 @@ def transform(x, nc=3):
         return floatX(x).transpose(0, 3, 1, 2) / 255.0
 
 
-
 def inverse_transform(x, npx=64, nc=3):
     if nc == 3:
         return (x.reshape(-1, 3, npx, npx).transpose(0, 2, 3, 1) + 1.) / 2.
     else:
         return 1.0 - x.reshape(-1, 1, npx, npx).transpose(0, 2, 3, 1)
-
 
 
 def init_gen_params(nz=100, n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
@@ -118,6 +113,7 @@ def init_gen_params(nz=100, n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
     gen_params.append(gwx)
     return gen_params
 
+
 def init_predict_params(nz=100, n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
     disc_params = []
     dw0 = difn((n_f, nc, fs, fs), 'dw0')
@@ -132,7 +128,6 @@ def init_predict_params(nz=100, n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
     dwy = difn((n_f * 2 ** n_layers * init_sz * init_sz, nz), 'dwy')
     disc_params.append(dwy)
     return disc_params
-
 
 
 def init_disc_params(n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
@@ -151,7 +146,6 @@ def init_disc_params(n_f=128, n_layers=3, init_sz=4, fs=5, nc=3):
     dwy = difn((n_f * 2 ** n_layers * init_sz * init_sz, 1), 'dwy')
     all_params.extend([dwy])
     return all_params
-
 
 
 def gen_batchnorm(_z, _params, n_layers=3, n_f=128, init_sz=4, nc=3):
@@ -195,7 +189,6 @@ def discrim_batchnorm(_x, _params, n_layers=3):
     return y, output
 
 
-
 def predict(_x, _params, n_layers=3):
     w = _params[0]
     h0 = lrelu(dnn_conv(_x, w, subsample=(2, 2), border_mode=(2, 2)))
@@ -226,7 +219,6 @@ def predict_batchnorm(_x, _params, n_layers=3):
     y = tanh(T.dot(h, _params[-1]))
     return y, output
 
-
     return y, output
 
 
@@ -247,4 +239,3 @@ def gen_test(_z, _params, _bn, n_layers=3, n_f=128, init_sz=4):
         hs.append(hout)
     x = tanh(deconv(hs[-1], _params[-1], subsample=(2, 2), border_mode=(2, 2)))
     return x
-

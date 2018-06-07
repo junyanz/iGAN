@@ -21,7 +21,6 @@ import lasagne
 import argparse
 from time import time
 import cv2
-from pdb import set_trace as st
 
 # set arguments and parameters
 parser = argparse.ArgumentParser('Train a predictive network (x->z) to invert the generative network')
@@ -64,7 +63,7 @@ utils.mkdirs([rec_dir, model_dir, log_dir, web_dir])
 tr_data, te_data, tr_stream, te_stream, ntrain, ntest \
     = load_imgs(ntrain=None, ntest=None, batch_size=args.batch_size, data_file=args.data_file)
 te_handle = te_data.open()
-ntest = int(np.floor(ntest/float(args.batch_size)) * args.batch_size)
+ntest = int(np.floor(ntest / float(args.batch_size)) * args.batch_size)
 # st()
 test_x, = te_data.get_data(te_handle, slice(0, ntest))
 
@@ -76,7 +75,7 @@ train_dcgan_utils.load_model(gen_params, os.path.join(model_dir, 'gen_params'))
 gen_batchnorm = train_dcgan_utils.load_batchnorm(os.path.join(model_dir, 'gen_batchnorm'))
 
 # define the model
-t= time()
+t = time()
 x = T.tensor4()
 z = train_dcgan_utils.predict(x, predict_params, n_layers=n_layers)
 gx = train_dcgan_utils.gen_test(z, gen_params, gen_batchnorm, n_layers=n_layers, n_f=n_f)
@@ -121,7 +120,7 @@ def rec_test(test_data, n_epochs=0, batch_size=128, output_dir=None):
     ntest = len(test_data)
 
     for n in tqdm(range(ntest / batch_size)):
-        imb = test_data[n*batch_size:(n+1)*batch_size, ...]
+        imb = test_data[n * batch_size:(n + 1) * batch_size, ...]
         # imb = train_dcgan_utils.transform(xmb, nc=3)
         [cost, gx] = _train_p_cost(imb)
         costs.append(cost)
@@ -142,11 +141,11 @@ def rec_test(test_data, n_epochs=0, batch_size=128, output_dir=None):
         txt = 'epoch = %3.3d, cost = %3.3f' % (n_epochs, mean_cost)
 
         width = save_comp.shape[1]
-        save_f = (save_comp*255).astype(np.uint8)
+        save_f = (save_comp * 255).astype(np.uint8)
         html.save_image([save_f], [''], header=txt, width=width, cvt=True)
         html.save()
         save_cvt = cv2.cvtColor(save_f, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(os.path.join(rec_dir, 'rec_epoch_%5.5d.png'%n_epochs), save_cvt)
+        cv2.imwrite(os.path.join(rec_dir, 'rec_epoch_%5.5d.png' % n_epochs), save_cvt)
 
     return mean_cost
 
@@ -174,7 +173,7 @@ for epoch in range(niter + niter_decay):
 
     if n_epochs % args.save_freq == 0:
         train_dcgan_utils.save_model(predict_params, '%s/predict_params%3.3d' % (model_dir, n_epochs))
-    train_dcgan_utils.save_model(predict_params, os.path.join(model_dir, 'predict_params')) # save the latest one
+    train_dcgan_utils.save_model(predict_params, os.path.join(model_dir, 'predict_params'))  # save the latest one
 
     test_cost = rec_test(test_data=test_x, n_epochs=n_epochs, batch_size=args.batch_size, output_dir=rec_dir)
     log = [n_epochs, n_updates, n_examples, time() - t, float(test_cost)]

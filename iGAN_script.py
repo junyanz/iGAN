@@ -4,7 +4,7 @@ from pydoc import locate
 import constrained_opt
 import cv2
 import numpy as np
-from pdb import set_trace as st
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='iGAN: Interactive Visual Synthesis Powered by GAN')
@@ -23,6 +23,7 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def preprocess_image(img_path, npx):
     im = cv2.imread(img_path, 1)
     if im.shape[0] != npx or im.shape[1] != npx:
@@ -32,9 +33,11 @@ def preprocess_image(img_path, npx):
 
     out = cv2.cvtColor(out, cv2.COLOR_BGR2RGB)
     return out
+
+
 if __name__ == '__main__':
     args = parse_args()
-    if not args.model_file:  #if the model_file is not specified
+    if not args.model_file:  # if the model_file is not specified
         args.model_file = './models/%s.%s' % (args.model_name, args.model_type)
 
     for arg in vars(args):
@@ -54,11 +57,11 @@ if __name__ == '__main__':
     im_edge = preprocess_image(args.input_edge, npx)
     # run the optimization
     opt_engine.init_z()
-    constraints = [im_color, im_color_mask[... ,[0]], im_edge, im_edge[...,[0]]]
+    constraints = [im_color, im_color_mask[..., [0]], im_edge, im_edge[..., [0]]]
     for n in range(args.n_iters):
         opt_engine.update_invert(constraints=constraints)
     results = opt_engine.get_current_results()
-    final_result= np.concatenate(results, 1)
+    final_result = np.concatenate(results, 1)
     # combine input and output
     final_vis = np. hstack([im_color, im_color_mask, im_edge, final_result])
     final_vis = cv2.cvtColor(final_vis, cv2.COLOR_RGB2BGR)

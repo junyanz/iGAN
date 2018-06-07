@@ -4,6 +4,7 @@ from pydoc import locate
 from lib import utils
 import cv2
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description='generated random samples (dcgan_theano)')
     parser.add_argument('--model_name', dest='model_name', help='the model name', default='outdoor_64', type=str)
@@ -15,9 +16,10 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 if __name__ == '__main__':
     args = parse_args()
-    if not args.model_file:  #if model directory is not specified
+    if not args.model_file:  # if model directory is not specified
         args.model_file = './models/%s.%s' % (args.model_name, args.model_type)
 
     if not args.output_image:

@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser('compute batchnorm statistics for DCGAN model')
 parser.add_argument('--model_name', dest='model_name', help='model name', default='shoes_64', type=str)
 parser.add_argument('--ext', dest='ext', help='experiment name=model_name+ext', default='', type=str)
 parser.add_argument('--batch_size', dest='batch_size', help='the number of examples in each batch', type=int, default=128)
-parser.add_argument('--num_batches', dest='num_batches', help='number of batches for estimating batchnorm parameters',type=int, default=1000)
+parser.add_argument('--num_batches', dest='num_batches', help='number of batches for estimating batchnorm parameters', type=int, default=1000)
 parser.add_argument('--cache_dir', dest='cache_dir', help='cache directory that stores models, samples and webpages', type=str, default=None)
 args = parser.parse_args()
 
@@ -119,4 +119,3 @@ gen_batchnorm = nb_mean[:ngbn] + nb_var[:ngbn]
 disc_batchnorm = nb_mean[ngbn:] + nb_var[ngbn:]
 utils.PickleSave(gen_bn_path, gen_batchnorm)
 utils.PickleSave(disc_bn_path, disc_batchnorm)
-

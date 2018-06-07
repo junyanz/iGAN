@@ -1,6 +1,7 @@
 from __future__ import print_function
 
-import inspect, re
+import inspect
+import re
 import numpy as np
 import cv2
 import os
@@ -18,31 +19,30 @@ def debug_trace():
     set_trace()
 
 
-
-
 def info(object, spacing=10, collapse=1):
     """Print methods and doc strings.
     Takes module, class, list, dictionary, or string."""
     methodList = [e for e in dir(object) if isinstance(getattr(object, e), collections.Callable)]
     processFunc = collapse and (lambda s: " ".join(s.split())) or (lambda s: s)
-    print( "\n".join(["%s %s" %
+    print("\n".join(["%s %s" %
                      (method.ljust(spacing),
                       processFunc(str(getattr(object, method).__doc__)))
-                     for method in methodList]) )
+                     for method in methodList]))
 
 
 def PickleLoad(file_name):
     try:
         with open(file_name, 'rb') as f:
-            data= pickle.load(f)
+            data = pickle.load(f)
     except UnicodeDecodeError:
         with open(file_name, 'rb') as f:
-            data= pickle.load(f, encoding='latin1')
+            data = pickle.load(f, encoding='latin1')
     return data
+
 
 def PickleSave(file_name, data):
     with open(file_name, "wb") as f:
-          pickle.dump(data, f, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(data, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 def varname(p):
@@ -70,7 +70,7 @@ def interp_z(z0, z1, ratio, interp='linear'):
                 z_i = interp_z(z0_i, z1_i, ratio, 'linear')
             else:
                 z_i = np.sin((1 - ratio) * omega) / sin_omega * z0_i + np.sin(ratio * omega) / sin_omega * z1_i
-            z_t.append(z_i[np.newaxis,...])
+            z_t.append(z_i[np.newaxis, ...])
         z_t = np.concatenate(z_t, axis=0)
     return z_t
 
@@ -95,13 +95,15 @@ def CVShow(im, im_name='', wait=1):
     cv2.waitKey(wait)
     return im_show
 
+
 def average_image(imgs, weights):
-    im_weights = np.tile(weights[:,np.newaxis, np.newaxis, np.newaxis], (1, imgs.shape[1], imgs.shape[2], imgs.shape[3]))
+    im_weights = np.tile(weights[:, np.newaxis, np.newaxis, np.newaxis], (1, imgs.shape[1], imgs.shape[2], imgs.shape[3]))
     imgs_f = imgs.astype(np.float32)
     weights_norm = np.mean(im_weights)
-    average_f = np.mean(imgs_f * im_weights, axis=0) /weights_norm
+    average_f = np.mean(imgs_f * im_weights, axis=0) / weights_norm
     average = average_f.astype(np.uint8)
     return average
+
 
 def mkdirs(paths):
     if isinstance(paths, list) and not isinstance(paths, str):
@@ -115,7 +117,8 @@ def mkdir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-def grid_vis(X, nh, nw): #[buggy]
+
+def grid_vis(X, nh, nw):  # [buggy]
     if X.shape[0] == 1:
         return X[0]
 
@@ -123,7 +126,7 @@ def grid_vis(X, nh, nw): #[buggy]
     if X.ndim == 3:
         X = X[..., np.newaxis]
     if X.shape[-1] == 1:
-        X = np.tile(X, [1,1,1,3])
+        X = np.tile(X, [1, 1, 1, 3])
 
     h, w = X[0].shape[:2]
 
@@ -138,4 +141,3 @@ def grid_vis(X, nh, nw): #[buggy]
         img[j * h:j * h + h, i * w:i * w + w, :] = x
     img = np.squeeze(img)
     return img
-

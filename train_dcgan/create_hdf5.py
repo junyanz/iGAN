@@ -12,6 +12,7 @@ import argparse
 def print_name(name):
     print(name)
 
+
 # set arguments and parameters
 parser = argparse.ArgumentParser('create a hdf5 file from lmdb or image directory')
 parser.add_argument('--dataset_dir', dest='dataset_dir', help='the file or directory that stores the image collection', type=str)
@@ -23,26 +24,29 @@ args = parser.parse_args()
 
 
 for arg in vars(args):
-    print('[%s] = ' % arg,  getattr(args, arg))
+    print('[%s] = ' % arg, getattr(args, arg))
 
 width = args.width
 
 # process the image
+
+
 def ProcessImage(img, channel=3):  # [assumption]:  image is x, w, 3 with uint8
     if channel == 1:
-        img = 255- cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).reshape(1, width, width, 1)
+        img = 255 - cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).reshape(1, width, width, 1)
     else:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).reshape(1, width, width, 3)
     return img
 
-if os.path.isfile(args.hdf5_file): # if hdf5 file already exists
+
+if os.path.isfile(args.hdf5_file):  # if hdf5 file already exists
     print('already created  %s' % args.hdf5_file)
     f = h5py.File(args.hdf5_file, 'r')
     f.visit(print_name)
 else:
     if args.mode == 'mnist':  # read mnist dataset
         fd = open(args.dataset_dir)
-        loaded = np.fromfile(file=fd,dtype=np.uint8)
+        loaded = np.fromfile(file=fd, dtype=np.uint8)
         imgs = loaded[16:].reshape((60000, 28, 28, 1)).astype(np.uint8)
         nImgs = imgs.shape[0]
         np.random.shuffle(imgs)
@@ -64,13 +68,12 @@ else:
         nImgs = len(imgs)
         imgs = np.concatenate(imgs, axis=0)
 
-
     if args.mode == 'lmdb':  # convert lmdb to hdf5
         print('you need to install lmdb')
         print('sudo pip install lmdb')
         import lmdb
         env = lmdb.open(args.dataset_dir, map_size=1099511627776,
-                    max_readers=100, readonly=True)
+                        max_readers=100, readonly=True)
         imgs = list()
         id = 0
         with env.begin(write=False) as txn:
@@ -79,8 +82,8 @@ else:
                 id = id + 1
                 if id % 1000 == 0:
                     print('read %d images' % id)
-                img = cv2.imdecode(np.fromstring(val, dtype=np.uint8),flags=1)
-                img = cv2.resize(img, dsize=(width, width),interpolation = cv2.INTER_CUBIC)
+                img = cv2.imdecode(np.fromstring(val, dtype=np.uint8), flags=1)
+                img = cv2.resize(img, dsize=(width, width), interpolation=cv2.INTER_CUBIC)
                 img = ProcessImage(imgs, args.channel)
                 imgs.append(img)
             nImgs = len(imgs)
@@ -88,7 +91,6 @@ else:
             imgIdx = np.arange(nImgs)
             np.random.shuffle(imgIdx)
             imgs = imgs[imgIdx]
-
 
     f = h5py.File(args.hdf5_file, 'w')
     print('writing %d images to hdf5 file %s' % (nImgs, args.hdf5_file))
@@ -98,9 +100,9 @@ else:
     f_imgs.dims[2].label = 'width'
     f_imgs.dims[3].label = 'channel'
 
-    nVal = min(int(nImgs*0.05), 10000)
-    split_dict = { 'train': {'imgs': (0, nImgs-nVal)},
-                   'test': {'imgs': (nImgs-nVal, nImgs)}}
+    nVal = min(int(nImgs * 0.05), 10000)
+    split_dict = {'train': {'imgs': (0, nImgs - nVal)},
+                  'test': {'imgs': (nImgs - nVal, nImgs)}}
     f.attrs['split'] = H5PYDataset.create_split_array(split_dict)
     f.flush()
     f.close()

@@ -19,7 +19,7 @@ parser.add_argument('--model_name', dest='model_name', help='model name', defaul
 parser.add_argument('--ext', dest='ext', help='experiment name=model_name+ext', default='', type=str)
 parser.add_argument('--data_file', dest='data_file', help='the file that stores the hdf5 data', type=str, default=None)
 parser.add_argument('--batch_size', dest='batch_size', help='the number of examples in each batch', type=int, default=128)
-parser.add_argument('--num_batches', dest='num_batches', help='number of batches for estimating batchnorm parameters',type=int, default=1000)
+parser.add_argument('--num_batches', dest='num_batches', help='number of batches for estimating batchnorm parameters', type=int, default=1000)
 parser.add_argument('--cache_dir', dest='cache_dir', help='cache directory that stores models, samples and webpages', type=str, default=None)
 args = parser.parse_args()
 
@@ -78,7 +78,7 @@ for imb, in tqdm(tr_stream.get_epoch_iterator(), total=ntrain / batch_size):
     else:
         for id, d in enumerate(bn_data):
             nb_sum[id] = nb_sum[id] + d
-    n = n+1
+    n = n + 1
     if n >= num_batches:
         break
 # compute empirical mean

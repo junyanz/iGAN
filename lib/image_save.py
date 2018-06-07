@@ -3,7 +3,6 @@ import cv2
 import os
 import glob
 import numpy as np
-from pdb import set_trace as st
 
 
 class ImageSave:

@@ -57,7 +57,7 @@ html = image_save.ImageSave(web_dir, expr_name, append=True)
 utils.mkdirs([sample_dir, model_dir, log_dir, web_dir])
 
 # load data from hdf5 file
-tr_data, te_data, tr_stream, te_stream, ntrain, ntest = load.load_imgs(ntrain=None, ntest=None, batch_size=args.batch_size,data_file=args.data_file)
+tr_data, te_data, tr_stream, te_stream, ntrain, ntest = load.load_imgs(ntrain=None, ntest=None, batch_size=args.batch_size, data_file=args.data_file)
 te_handle = te_data.open()
 test_x, = te_data.get_data(te_handle, slice(0, ntest))
 
@@ -67,7 +67,7 @@ vis_idxs = py_rng.sample(np.arange(len(test_x)), n_vis)
 vaX_vis = train_dcgan_utils.inverse_transform(test_x[vis_idxs], npx=npx, nc=nc)
 # st()
 n_grid = int(np.sqrt(n_vis))
-grid_real = utils.grid_vis((vaX_vis*255.0).astype(np.uint8), n_grid, n_grid)
+grid_real = utils.grid_vis((vaX_vis * 255.0).astype(np.uint8), n_grid, n_grid)
 train_dcgan_utils.save_image(grid_real, os.path.join(sample_dir, 'real_samples.png'))
 
 
@@ -109,7 +109,7 @@ sample_zmb = floatX(np_rng.uniform(-1., 1., size=(n_vis, nz)))
 
 
 f_log = open('%s/training_log.ndjson' % log_dir, 'wb')
-log_fields = ['n_epochs', 'n_updates', 'n_examples', 'n_seconds', 'g_cost', 'd_cost',]
+log_fields = ['n_epochs', 'n_updates', 'n_examples', 'n_seconds', 'g_cost', 'd_cost', ]
 
 # initialization
 n_updates = 0
@@ -117,7 +117,7 @@ n_epochs = 0
 n_examples = 0
 t = time()
 
-for epoch in range(niter+niter_decay):
+for epoch in range(niter + niter_decay):
     for imb, in tqdm(tr_stream.get_epoch_iterator(), total=ntrain / args.batch_size):
         imb = train_dcgan_utils.transform(imb, nc=nc)
         zmb = floatX(np_rng.uniform(-1., 1., size=(len(imb), nz)))
@@ -131,8 +131,8 @@ for epoch in range(niter+niter_decay):
     g_cost = float(cost[0])
     d_cost = float(cost[1])
     # print logging information
-    log = [n_epochs, n_updates, n_examples, time() - t,  g_cost, d_cost]
-    print('epoch %.0f: G_cost %.4f, D_cost %.4f' % (epoch,  g_cost, d_cost))
+    log = [n_epochs, n_updates, n_examples, time() - t, g_cost, d_cost]
+    print('epoch %.0f: G_cost %.4f, D_cost %.4f' % (epoch, g_cost, d_cost))
     f_log.write(json.dumps(dict(zip(log_fields, log))) + '\n')
     f_log.flush()
 
@@ -142,8 +142,8 @@ for epoch in range(niter+niter_decay):
     samples = np.asarray(_gen(sample_zmb))
     samples_t = train_dcgan_utils.inverse_transform(samples, npx=npx, nc=nc)
     grid_vis = utils.grid_vis(samples_t, n_grid, n_grid)
-    grid_vis_i = (grid_vis*255.0).astype(np.uint8)
-    train_dcgan_utils.save_image(grid_vis_i, os.path.join(sample_dir, 'gen_%5.5d.png'%n_epochs))
+    grid_vis_i = (grid_vis * 255.0).astype(np.uint8)
+    train_dcgan_utils.save_image(grid_vis_i, os.path.join(sample_dir, 'gen_%5.5d.png' % n_epochs))
     html.save_image([grid_vis_i], [''], header='epoch_%3.3d' % n_epochs, width=grid_vis.shape[1], cvt=True)
     html.save()
 

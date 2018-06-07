@@ -8,6 +8,7 @@ from ui import gui_design
 from pydoc import locate
 import constrained_opt
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description='iGAN: Interactive Visual Synthesis Powered by GAN')
     parser.add_argument('--model_name', dest='model_name', help='the model name', default='outdoor_64', type=str)
@@ -21,14 +22,15 @@ def parse_args():
     parser.add_argument('--model_file', dest='model_file', help='the file that stores the generative model', type=str, default=None)
     parser.add_argument('--d_weight', dest='d_weight', help='captures the visual realism based on GAN discriminator', type=float, default=0.0)
     parser.add_argument('--interp', dest='interp', help='the interpolation method (linear or slerp)', type=str, default='linear')
-    parser.add_argument('--average', dest='average', help='averageExplorer mode',action="store_true", default=False)
+    parser.add_argument('--average', dest='average', help='averageExplorer mode', action="store_true", default=False)
     parser.add_argument('--shadow', dest='shadow', help='shadowDraw mode', action="store_true", default=False)
     args = parser.parse_args()
     return args
 
+
 if __name__ == '__main__':
     args = parse_args()
-    if not args.model_file:  #if the model_file is not specified
+    if not args.model_file:  # if the model_file is not specified
         args.model_file = './models/%s.%s' % (args.model_name, args.model_type)
 
     for arg in vars(args):

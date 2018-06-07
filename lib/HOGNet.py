@@ -7,15 +7,15 @@ from time import time
 # NO = 8
 # BS = 8
 
+
 class HOGNet():
     def __init__(self, use_bin=True, NO=8, BS=8, nc=3):
-        self.use_bin=True
+        self.use_bin = True
         self.NO = NO
         self.BS = BS
         self.nc = nc
         self.use_bin = use_bin
         self._comp_mask = self.def_comp_mask()
-
 
     def def_comp_mask(self):
         BS = self.BS
@@ -53,8 +53,8 @@ class HOGNet():
         G_f = sharedX(floatX(G))
 
         a = np.cos(np.pi / NO)
-        l1 = sharedX(floatX(1/(1-a)))
-        l2 = sharedX(floatX(a/(1-a)))
+        l1 = sharedX(floatX(1 / (1 - a)))
+        l2 = sharedX(floatX(a / (1 - a)))
         eps = sharedX(1e-3)
         if nc == 3:
             x_gray = T.mean(x, axis=1).dimshuffle(0, 'x', 1, 2)
@@ -68,21 +68,17 @@ class HOGNet():
             gx = g[:, [0], :, :]
             gy = g[:, [1], :, :]
             gg = T.sqrt(gx * gx + gy * gy + eps)
-            hk = T.maximum(0, l1*h0-l2*gg)
+            hk = T.maximum(0, l1 * h0 - l2 * gg)
 
-            bf_w = np.zeros((NO, NO, 2*BS, 2*BS))
+            bf_w = np.zeros((NO, NO, 2 * BS, 2 * BS))
             b = 1 - np.abs((np.arange(1, 2 * BS + 1) - (2 * BS + 1.0) / 2.0) / BS)
             b = b[np.newaxis, :]
             bb = b.T.dot(b)
             for n in range(NO):
-                bf_w[n,n] = bb
+                bf_w[n, n] = bb
 
             bf = sharedX(floatX(bf_w))
-            h_f = dnn_conv(hk, bf, subsample=(BS,BS), border_mode=(BS/2, BS/2))
+            h_f = dnn_conv(hk, bf, subsample=(BS, BS), border_mode=(BS / 2, BS / 2))
             return h_f
         else:
             return g
-
-
-
-

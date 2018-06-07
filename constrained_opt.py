@@ -5,7 +5,7 @@ import numpy as np
 import sys
 from lib import utils
 from PyQt4.QtCore import *
-import cv2
+
 
 class Constrained_OPT(QThread):
     def __init__(self, opt_solver, batch_size=32, n_iters=25, topK=16, morph_steps=16, interp='linear'):
@@ -35,7 +35,7 @@ class Constrained_OPT(QThread):
         self.order = None
         self.init_constraints()  # initialize
         self.init_z()            # initialize latent vectors
-        self.just_fixed=True
+        self.just_fixed = True
         self.weights = None
 
     def is_fixed(self):
@@ -55,7 +55,7 @@ class Constrained_OPT(QThread):
             print('set z as image %d, frame %d' % (image_id, frame_id))
             self.prev_z = self.z_seq[image_id, frame_id]
 
-        if self.prev_z is None:  #random initialization
+        if self.prev_z is None:  # random initialization
             self.z_init = np_rng.uniform(-1.0, 1.0, size=(self.batch_size, nz))
             self.opt_solver.set_smoothness(0.0)
             self.z_const = self.z_init
@@ -79,15 +79,10 @@ class Constrained_OPT(QThread):
 
     def save_constraints(self):
         [im_c, mask_c, im_e, mask_e] = self.combine_constraints(self.constraints)
-        # write image
-        # im_c2 = cv2.cvtColor(im_c, cv2.COLOR_RGB2BGR)
-        # cv2.imwrite('input_color_image.png', im_c2)
-        # cv2.imwrite('input_color_mask.png', mask_c)
-        # cv2.imwrite('input_edge_map.png', im_e)
         self.prev_im_c = im_c.copy()
         self.prev_mask_c = mask_c.copy()
         self.prev_im_e = im_e.copy()
-        self.prev_mask_e =mask_e.copy()
+        self.prev_mask_e = mask_e.copy()
 
     def init_constraints(self):
         self.prev_im_c = None
@@ -95,9 +90,8 @@ class Constrained_OPT(QThread):
         self.prev_im_e = None
         self.prev_mask_e = None
 
-
     def combine_constraints(self, constraints):
-        if constraints is not None: #[hack]
+        if constraints is not None:  # [hack]
             # print('combine strokes')
             [im_c, mask_c, im_e, mask_e] = constraints
             if self.prev_im_c is None:
@@ -113,21 +107,20 @@ class Constrained_OPT(QThread):
             if self.prev_im_c is None:
                 im_c_f = im_c
             else:
-                im_c_f =  self.prev_im_c.copy()
-                mask_c3 = np.tile(mask_c, [1,1, im_c.shape[2]])
-                np.copyto(im_c_f, im_c, where=mask_c3.astype(np.bool))  #[hack]
+                im_c_f = self.prev_im_c.copy()
+                mask_c3 = np.tile(mask_c, [1, 1, im_c.shape[2]])
+                np.copyto(im_c_f, im_c, where=mask_c3.astype(np.bool))  # [hack]
 
             if self.prev_im_e is None:
                 im_e_f = im_e
             else:
                 im_e_f = self.prev_im_e.copy()
-                mask_e3 = np.tile(mask_e, [1,1,im_e.shape[2]])
+                mask_e3 = np.tile(mask_e, [1, 1, im_e.shape[2]])
                 np.copyto(im_e_f, im_e, where=mask_e3.astype(np.bool))
 
             return [im_c_f, mask_c_f, im_e_f, mask_e_f]
         else:
             return [self.prev_im_c, self.prev_mask_c, self.prev_im_e, self.prev_mask_e]
-
 
     def set_constraints(self, constraints):
         self.constraints = constraints
@@ -139,7 +132,6 @@ class Constrained_OPT(QThread):
             return self.z_seq[image_id, frame_id]
         else:
             return None
-
 
     def get_image(self, image_id, frame_id, useAverage=False):
         if self.to_update:
@@ -158,7 +150,7 @@ class Constrained_OPT(QThread):
                 frame_id = frame_id % self.img_seq.shape[1]
                 image_id = image_id % self.img_seq.shape[0]
                 if useAverage and self.weights is not None:
-                    return utils.average_image(self.img_seq[:,frame_id,...], self.weights)
+                    return utils.average_image(self.img_seq[:, frame_id, ...], self.weights)
                 else:
                     return self.img_seq[image_id, frame_id]
 
@@ -188,10 +180,10 @@ class Constrained_OPT(QThread):
         return self.current_ims
 
     def run(self):  # main function
-        time_to_wait = 33 # 33 millisecond
+        time_to_wait = 33  # 33 millisecond
         while (1):
-            t1 =time()
-            if self.to_set_constraints:# update constraints
+            t1 = time()
+            if self.to_set_constraints:  # update constraints
                 self.to_set_constraints = False
 
             if self.constraints is not None and self.iter_count < self.max_iters:
@@ -204,11 +196,11 @@ class Constrained_OPT(QThread):
                 self.to_update = False
                 self.iter_count += 1
 
-            t_c = int(1000*(time()-t1))
+            t_c = int(1000 * (time() - t1))
             print('update one iteration: %03d ms' % t_c, end='\r')
             sys.stdout.flush()
             if t_c < time_to_wait:
-                self.msleep(time_to_wait-t_c)
+                self.msleep(time_to_wait - t_c)
 
     def update_invert(self, constraints):
         constraints_c = self.combine_constraints(constraints)
@@ -218,7 +210,7 @@ class Constrained_OPT(QThread):
 
         if self.topK > 1:
             cost_sort = cost_all[order]
-            thres_top =  2 * np.mean(cost_sort[0:min(int(self.topK / 2.0), len(cost_sort))])
+            thres_top = 2 * np.mean(cost_sort[0:min(int(self.topK / 2.0), len(cost_sort))])
             ids = cost_sort - thres_top < 1e-10
             topK = np.min([self.topK, sum(ids)])
         else:
@@ -233,7 +225,7 @@ class Constrained_OPT(QThread):
         self.current_ims = gx_t[order]
         # compute weights
         cost_weights = cost_all[order]
-        self.weights = np.exp(-(cost_weights-np.mean(cost_weights)) / (np.std(cost_weights)+1e-10))
+        self.weights = np.exp(-(cost_weights - np.mean(cost_weights)) / (np.std(cost_weights) + 1e-10))
         self.current_zs = z_t[order]
         self.emit(SIGNAL('update_image'))
 
@@ -248,14 +240,14 @@ class Constrained_OPT(QThread):
         z_seq = []
 
         for n in range(n_steps):
-            ratio = n / float(n_steps- 1)
+            ratio = n / float(n_steps - 1)
             z_t = utils.interp_z(z1, z2, ratio, interp=interp)
             seq = self.opt_solver.gen_samples(z0=z_t)
             img_seq.append(seq[:, np.newaxis, ...])
-            z_seq.append(z_t[:,np.newaxis,...])
+            z_seq.append(z_t[:, np.newaxis, ...])
         self.img_seq = np.concatenate(img_seq, axis=1)
         self.z_seq = np.concatenate(z_seq, axis=1)
-        print('generate morphing sequence (%.3f seconds)' % (time()-t))
+        print('generate morphing sequence (%.3f seconds)' % (time() - t))
 
     def reset(self):
         self.prev_z = self.z0
@@ -271,7 +263,4 @@ class Constrained_OPT(QThread):
         self.to_set_constraints = False
         self.iter_total = 0
         self.iter_count = 0
-        self.weights =None
-
-
-
+        self.weights = None

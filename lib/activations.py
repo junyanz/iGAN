@@ -1,6 +1,5 @@
-import theano
 import theano.tensor as T
-from lib.theano_utils import floatX, sharedX
+from lib.theano_utils import sharedX
 
 
 class Softmax(object):
@@ -12,6 +11,7 @@ class Softmax(object):
         e_x = T.exp(x - x.max(axis=1).dimshuffle(0, 'x'))
         return e_x / e_x.sum(axis=1).dimshuffle(0, 'x')
 
+
 class ConvSoftmax(object):
 
     def __init__(self):
@@ -20,6 +20,7 @@ class ConvSoftmax(object):
     def __call__(self, x):
         e_x = T.exp(x - x.max(axis=1, keepdims=True))
         return e_x / e_x.sum(axis=1, keepdims=True)
+
 
 class Maxout(object):
 
@@ -35,6 +36,7 @@ class Maxout(object):
             raise NotImplementedError
         return x
 
+
 class Rectify(object):
 
     def __init__(self):
@@ -43,6 +45,7 @@ class Rectify(object):
     def __call__(self, x):
         return (x + T.abs_(x)) / 2.0
 
+
 class ClippedRectify(object):
 
     def __init__(self, clip=10.):
@@ -50,6 +53,7 @@ class ClippedRectify(object):
 
     def __call__(self, x):
         return T.clip((x + T.abs_(x)) / 2.0, 0., self.clip)
+
 
 class LeakyRectify(object):
 
@@ -60,6 +64,7 @@ class LeakyRectify(object):
         f1 = 0.5 * (1 + self.leak)
         f2 = 0.5 * (1 - self.leak)
         return f1 * x + f2 * T.abs_(x)
+
 
 class Prelu(object):
 
@@ -73,6 +78,7 @@ class Prelu(object):
         f2 = 0.5 * (1 - leak)
         return f1 * x + f2 * T.abs_(x)
 
+
 class Tanh(object):
 
     def __init__(self):
@@ -80,6 +86,7 @@ class Tanh(object):
 
     def __call__(self, x):
         return T.tanh(x)
+
 
 class Sigmoid(object):
 
@@ -89,6 +96,7 @@ class Sigmoid(object):
     def __call__(self, x):
         return T.nnet.sigmoid(x)
 
+
 class Linear(object):
 
     def __init__(self):
@@ -96,6 +104,7 @@ class Linear(object):
 
     def __call__(self, x):
         return x
+
 
 class HardSigmoid(object):
 
@@ -105,13 +114,15 @@ class HardSigmoid(object):
     def __call__(self, X):
         return T.clip(X + 0.5, 0., 1.)
 
+
 class TRec(object):
 
     def __init__(self, t=1):
         self.t = t
 
     def __call__(self, X):
-        return X*(X > self.t)
+        return X * (X > self.t)
+
 
 class HardTanh(object):
 

@@ -1,5 +1,5 @@
 def shoes_64():
-    n_layers = 3 # number of layers
+    n_layers = 3  # number of layers
     n_f = 128  # number of feature channels
     npx = 64  # height = width
     nc = 3  # number of image channels
@@ -10,7 +10,7 @@ def shoes_64():
 
 
 def outdoor_64():
-    n_layers = 3 # number of layers
+    n_layers = 3  # number of layers
     n_f = 128  # number of feature channels
     npx = 64  # height = width
     nc = 3  # number of image channels
@@ -19,8 +19,9 @@ def outdoor_64():
     niter_decay = 15  # of iter to linearly decay learning rate to zero
     return npx, n_layers, n_f, nc, nz, niter, niter_decay
 
+
 def church_64():
-    n_layers = 3 # number of layers
+    n_layers = 3  # number of layers
     n_f = 128  # number of feature channels
     npx = 64  # height = width
     nc = 3  # number of image channels
@@ -31,7 +32,7 @@ def church_64():
 
 
 def handbag_64():
-    n_layers = 3 # number of layers
+    n_layers = 3  # number of layers
     n_f = 128  # number of feature channels
     npx = 64  # height = width
     nc = 3  # number of image channels
@@ -40,8 +41,9 @@ def handbag_64():
     niter_decay = 25  # of iter to linearly decay learning rate to zero
     return npx, n_layers, n_f, nc, nz, niter, niter_decay
 
+
 def hed_shoes_64():
-    n_layers = 3 # number of layers
+    n_layers = 3  # number of layers
     n_f = 128  # number of feature channels
     npx = 64  # height = width
     nc = 1  # number of image channels
@@ -49,11 +51,10 @@ def hed_shoes_64():
     niter = 25  # # of iter at starting learning rate
     niter_decay = 25  # of iter to linearly decay learning rate to zero
     return npx, n_layers, n_f, nc, nz, niter, niter_decay
-
 
 
 def sketch_shoes_64():
-    n_layers = 3 # number of layers
+    n_layers = 3  # number of layers
     n_f = 128  # number of feature channels
     npx = 64  # height = width
     nc = 1  # number of image channels
@@ -62,8 +63,9 @@ def sketch_shoes_64():
     niter_decay = 25  # of iter to linearly decay learning rate to zero
     return npx, n_layers, n_f, nc, nz, niter, niter_decay
 
+
 def shoes_128():
-    n_layers = 4 # number of layers
+    n_layers = 4  # number of layers
     n_f = 64  # number of feature channels
     npx = 128  # height = width
     nc = 3  # number of image channels
@@ -71,4 +73,3 @@ def shoes_128():
     niter = 25  # # of iter at starting learning rate
     niter_decay = 25  # of iter to linearly decay learning rate to zero
     return npx, n_layers, n_f, nc, nz, niter, niter_decay
-

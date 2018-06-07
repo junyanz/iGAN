@@ -16,6 +16,7 @@ from PIL import Image
 from pydoc import locate
 from lib import activations
 
+
 def def_feature(layer='conv4', up_scale=4):
     print('COMPILING...')
     t = time()
@@ -55,7 +56,8 @@ def def_bfgs(model_G, layer='conv4', npx=64, alpha=0.002):
     _invert = theano.function(inputs=[z, x, x_f], outputs=output)
 
     print('%.2f seconds to compile _bfgs function' % (time() - t))
-    return _invert,z
+    return _invert, z
+
 
 def def_predict(model_P):
     print('COMPILING...')
@@ -72,8 +74,6 @@ def def_invert_models(gen_model, layer='conv4', alpha=0.002):
     ftr_model = def_feature(layer=layer)
     predict_model = def_predict(gen_model.model_P)
     return gen_model, bfgs_model, ftr_model, predict_model
-
-
 
 
 def predict_z(gen_model, _predict, ims, batch_size=32):
@@ -97,26 +97,24 @@ def invert_bfgs_batch(gen_model, invert_model, ftr_model, ims, z_predict=None, n
     zs = []
     recs = []
     fs = []
-    t = time()
     n_imgs = ims.shape[0]
     print('reconstruct %d images using bfgs' % n_imgs)
 
     for n in range(n_imgs):
-        im_n = ims[[n], :, :,:]
+        im_n = ims[[n], :, :, :]
         if z_predict is not None:
-            z0_n = z_predict[[n],...]
+            z0_n = z_predict[[n], ...]
         else:
             z0_n = None
-        gx, z_value, f_value = invert_bfgs(gen_model, invert_model, ftr_model,im=im_n, z_predict=z0_n, npx=npx)
+        gx, z_value, f_value = invert_bfgs(gen_model, invert_model, ftr_model, im=im_n, z_predict=z0_n, npx=npx)
         rec_im = (gx * 255).astype(np.uint8)
-        fs.append(f_value[np.newaxis,...])
-        zs.append(z_value[np.newaxis,...])
+        fs.append(f_value[np.newaxis, ...])
+        zs.append(z_value[np.newaxis, ...])
         recs.append(rec_im)
     recs = np.concatenate(recs, axis=0)
     zs = np.concatenate(zs, axis=0)
     fs = np.concatenate(fs, axis=0)
     return recs, zs, fs
-
 
 
 def invert_bfgs(gen_model, invert_model, ftr_model, im, z_predict=None, npx=64):
@@ -131,14 +129,14 @@ def invert_bfgs(gen_model, invert_model, ftr_model, im, z_predict=None, npx=64):
     ftr = ftr_model(im_t)
 
     prob = optimize.minimize(f_bfgs, z_predict, args=(_f, im_t, ftr),
-                             tol=1e-6, jac=True, method='L-BFGS-B', options={'maxiter':200})
+                             tol=1e-6, jac=True, method='L-BFGS-B', options={'maxiter': 200})
     print('n_iters = %3d, f = %.3f' % (prob.nit, prob.fun))
     z_opt = prob.x
     z_opt_n = floatX(z_opt[np.newaxis, :])
     [f_opt, g, gx] = _f(z_opt_n, im_t, ftr)
     gx = gen_model.inverse_transform(gx, npx=npx)
     z_opt = np.tanh(z_opt)
-    return gx, z_opt,f_opt
+    return gx, z_opt, f_opt
 
 
 def f_bfgs(z0, _f, x, x_f):
@@ -181,11 +179,12 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 if __name__ == "__main__":
     args = parse_args()
     if not args.model_file:  # if the model file is not specified
         args.model_file = './models/%s.%s' % (args.model_name, args.model_type)
-    if not args.output_image:# if the output image path is not specified
+    if not args.output_image:  # if the output image path is not specified
         args.output_image = args.input_image.replace('.png', '_%s.png' % args.solver)
 
     for arg in vars(args):
@@ -205,7 +204,7 @@ if __name__ == "__main__":
     im = np.array(im)
     im_pre = im[np.newaxis, :, :, :]
     # run the model
-    rec, _, _  = invert_images_CNN_opt(invert_models, im_pre, solver=args.solver)
+    rec, _, _ = invert_images_CNN_opt(invert_models, im_pre, solver=args.solver)
     rec = np.squeeze(rec)
     rec_im = Image.fromarray(rec)
     # resize the image (input aspect ratio)

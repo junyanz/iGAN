@@ -6,6 +6,7 @@ from lib.rng import np_rng
 from lib.theano_utils import floatX, sharedX
 import numpy as np
 
+
 class OPT_Solver():
     def __init__(self, model, batch_size=32, d_weight=0.0):
         self.model = model
@@ -16,7 +17,7 @@ class OPT_Solver():
         self.transform = model.transform
         self.transform_mask = model.transform_mask
         self.inverse_transform = model.inverse_transform
-        BS = 4 if self.nc == 1 else 8 # [hack]
+        BS = 4 if self.nc == 1 else 8  # [hack]
         self.hog = HOGNet.HOGNet(use_bin=True, NO=8, BS=BS, nc=self.nc)
         self.opt_model = self.def_invert(model, batch_size=batch_size, d_weight=d_weight, nc=self.nc)
         self.batch_size = batch_size
@@ -26,8 +27,8 @@ class OPT_Solver():
 
     def invert(self, constraints, z_i):
         [_invert, z_updates, z, beta_r, z_const] = self.opt_model
-        constraints_t  = self.preprocess_constraints(constraints)
-        [im_c_t, mask_c_t, im_e_t, mask_e_t] = constraints_t # [im_c_t, mask_c_t, im_e_t, mask_e_t]
+        constraints_t = self.preprocess_constraints(constraints)
+        [im_c_t, mask_c_t, im_e_t, mask_e_t] = constraints_t  # [im_c_t, mask_c_t, im_e_t, mask_e_t]
 
         results = _invert(im_c_t, mask_c_t, im_e_t, mask_e_t, z_i.astype(np.float32))
 
@@ -37,7 +38,6 @@ class OPT_Solver():
             gx_t = np.tile(gx_t, (1, 1, 1, 3))
         z_t = np.tanh(z.get_value()).copy()
         return gx_t, z_t, cost_all
-
 
     def preprocess_constraints(self, constraints):
         [im_c_o, mask_c_o, im_e_o, mask_e_o] = constraints
@@ -65,7 +65,7 @@ class OPT_Solver():
     def gen_samples(self, z0):
         samples = self.model.gen_samples(z0=z0)
         if self.nc == 1:
-            samples = np.tile(samples, [1,1,1,3])
+            samples = np.tile(samples, [1, 1, 1, 3])
         return samples
 
     def def_invert(self, model, batch_size=1, d_weight=0.5, nc=1, lr=0.1, b1=0.9, nz=100, use_bin=True):
@@ -79,8 +79,8 @@ class OPT_Solver():
         gx = model.model_G(z)
         # input: im_c: 255: no edge; 0: edge; transform=> 1: no edge, 0: edge
 
-        if nc == 1: # gx, range [0, 1] => edge, 1
-            gx3 = 1.0-gx #T.tile(gx, (1, 3, 1, 1))
+        if nc == 1:  # gx, range [0, 1] => edge, 1
+            gx3 = 1.0 - gx  # T.tile(gx, (1, 3, 1, 1))
         else:
             gx3 = gx
         mm_c = T.tile(m_c, (1, gx3.shape[1], 1, 1))
@@ -116,4 +116,3 @@ class OPT_Solver():
         _invert = theano.function(inputs=[x_c, m_c, x_e, m_e, z0], outputs=output, updates=z_updates)
         print('%.2f seconds to compile _invert function' % (time() - t))
         return [_invert, z_updates, z, d_weight_r, z_const]
-
