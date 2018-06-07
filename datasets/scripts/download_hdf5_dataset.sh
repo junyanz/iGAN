@@ -1,5 +1,5 @@
 FILE=$1
-URL=https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/$FILE.zip
+URL=http://efrosgans.eecs.berkeley.edu/iGAN/datasets/$FILE.zip
 ZIP_FILE=./datasets/$FILE.zip
 HDF5_FILE=./datasets/$FILE.hdf5
 echo "Downloading the hdf5 dataset ($FILE)..."

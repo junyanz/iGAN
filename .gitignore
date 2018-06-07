@@ -1,5 +1,7 @@
 # Byte-compiled / optimized / DLL files
 unused/
+datasets/
+models/
 __pycache__/
 *.py[cod]
 *$py.class

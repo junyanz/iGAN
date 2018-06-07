@@ -158,20 +158,6 @@ THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_scrip
 ```
 
 
-## TODO
-* ~~Support Python3.~~
-* ~~Add image datasets.~~
-* ~~Support average image mode.~~
-* ~~Add the DCGAN model training script.~~  
-* ~~Support sketch models for sketching guidance.~~
-* ~~Add the script for projecting an image to the latent vector `z`.~~
-* ~~Add a standalone script without UI.~~
-* Add 128x128 models.
-* Support other deep learning frameworks (e.g., Tensorflow).
-* Support other deep generative models (e.g., variational autoencoder).
-* Support image morphing mode.
-* Support image editing mode.
-
 ## Citation
 ```
 @inproceedings{zhu2016generative,
