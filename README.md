@@ -1,8 +1,8 @@
 ## iGAN: Interactive Image Generation via Generative Adversarial Networks
-[[Project]](http://www.eecs.berkeley.edu/~junyanz/projects/gvm/) [[Youtube]](https://youtu.be/9c4z6YsBGQ0)   [[Paper]](https://arxiv.org/pdf/1609.03552v2.pdf)  
+[[Project]](http://efrosgans.eecs.berkeley.edu/iGAN/) [[Youtube]](https://youtu.be/9c4z6YsBGQ0)   [[Paper]](https://arxiv.org/abs/1609.03552)  
 A research prototype developed by UC Berkeley and Adobe CTL.  
 
-Latest developement:  
+Latest development:  
 [[pix2pix]](https://github.com/phillipi/pix2pix): Torch implementation for learning a mapping from input images to output images.  
 [[CycleGAN]](https://github.com/junyanz/CycleGAN): Torch implementation for learning an image-to-image translation (i.e. pix2pix) without input-output pairs.  
 [[pytorch-CycleGAN-and-pix2pix]](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix): PyTorch implementation for both unpaired and paired image-to-image translation.
@@ -19,11 +19,11 @@ In European Conference on Computer Vision (ECCV) 2016
 <img src='pics/demo_teaser.jpg' width=800>
 
 
-Given a few user strokes, our system could produce photo-realistic samples that best satisfy the user edits at real-time. Our system is based on deep generative models such as Generative Adversarial Networks ([GAN](https://arxiv.org/abs/1406.2661)) and [DCGAN](https://github.com/Newmu/dcgan_code). The system serves the following two purposes:
+Given a few user strokes, our system could produce photo-realistic samples that best satisfy the user edits in real-time. Our system is based on deep generative models such as Generative Adversarial Networks ([GAN](https://arxiv.org/abs/1406.2661)) and [DCGAN](https://github.com/Newmu/dcgan_code). The system serves the following two purposes:
 * An intelligent drawing interface for automatically generating images inspired by the color and shape of the brush strokes.
-* An interactive visual debugging tool for understanding and visualizing deep generative models. By interacting with the  generative model, a developer can understand what visual content the model can produce, as well as the limitation of the model.
+* An interactive visual debugging tool for understanding and visualizing deep generative models. By interacting with the generative model, a developer can understand what visual content the model can produce, as well as the limitation of the model.
 
-We are working on supporting more generative models (e.g. variational autoencoder) and more deep learning frameworks (e.g. Tensorflow). You are welcome to propose new changes or contribute new features (e.g. Tensorflow branch) via pull requests. Please cite our paper if you find this code useful in your research.
+Please cite our paper if you find this code useful in your research.
 
 Contact: Jun-Yan Zhu (junyanz@berkeley.edu)
 
@@ -68,7 +68,7 @@ sudo pip install qdarkstyle
 sudo pip install dominate
 ```
 * GPU + CUDA + cuDNN:
-The code is tested on GTX Titan X + CUDA 7.5 + cuDNN 5.  Here are the tutorials on how to install [CUDA](http://www.r-tutor.com/gpu-computing/cuda-installation/cuda7.5-ubuntu) and [cuDNN](http://askubuntu.com/questions/767269/how-can-i-install-cudnn-on-ubuntu-16-04). A decent GPU is required to run the system at real-time. [**Warning**] If you run the program on a gpu server, you need to use a remote desktop software (e.g. VNC), which may introduce display artifacts and latency problem.
+The code is tested on GTX Titan X + CUDA 7.5 + cuDNN 5.  Here are the tutorials on how to install [CUDA](http://www.r-tutor.com/gpu-computing/cuda-installation/cuda7.5-ubuntu) and [cuDNN](http://askubuntu.com/questions/767269/how-can-i-install-cudnn-on-ubuntu-16-04). A decent GPU is required to run the system in real-time. [**Warning**] If you run the program on a GPU server, you need to use remote desktop software (e.g., VNC), which may introduce display artifacts and latency problem.
 
 ## Python3
 For `Python3` users, you need to replace `pip` with `pip3`:
@@ -85,32 +85,32 @@ See [[Youtube]](https://youtu.be/9c4z6YsBGQ0?t=2m18s) at 2:18s for the interacti
 <img src='pics/ui_intro.jpg' width=800>  
 
 #### Layout
-* Drawing Pad: This is the main window of our interface. A user can apply different edits via our brush tools and the system will display the generated image. Check/Uncheck `Edits` button to display/hide user edits.  
-* Candidate Results: a display showing thumbnails of all the candidate results (e.g. different modes) that fits the user edits. A user can click a mode (highlighted by a green rectangle), and the drawing pad will show this result.
+* Drawing Pad: This is the main window of our interface. A user can apply different edits via our brush tools, and the system will display the generated image. Check/Uncheck `Edits` button to display/hide user edits.  
+* Candidate Results: a display showing thumbnails of all the candidate results (e.g., different modes) that fits the user edits. A user can click a mode (highlighted by a green rectangle), and the drawing pad will show this result.
 * Brush Tools:  `Coloring Brush` for changing the color of a specific region; `Sketching brush` for outlining the shape. `Warping brush` for modifying the shape more explicitly.
-* Slider Bar: drag the slider bar to explore the interpolation sequence between the initial result (i.e. random generated image) and the current result (e.g. image that satisfies the user edits).
+* Slider Bar: drag the slider bar to explore the interpolation sequence between the initial result (i.e. randomly generated image) and the current result (e.g., image that satisfies the user edits).
 * Control Panel: `Play`: play the interpolation sequence; `Fix`: use the current result as additional constraints for further editing  `Restart`: restart the system; `Save`: save the result to a webpage. `Edits`: Check the box if you would like to show the edits on top of the generated image.
 
 
 #### User interaction
-* `Coloring Brush`:  right click to select a color; hold left click to paint; scroll the mouse wheel to adjust the width of the brush.
-* `Sketching Brush`: hold left click to sketch the shape.
-* `Warping Brush`: We recommend you first use coloring and sketching before the warping brush. Right click to select a square region; hold left click to drag the region; scroll the mouse wheel to adjust the size of the square region.
+* `Coloring Brush`:  right-click to select a color; hold left click to paint; scroll the mouse wheel to adjust the width of the brush.
+* `Sketching Brush`: hold left-click to sketch the shape.
+* `Warping Brush`: We recommend you first use coloring and sketching before the warping brush. Right-click to select a square region; hold left click to drag the region; scroll the mouse wheel to adjust the size of the square region.
 * Shortcuts: P for `Play`, F for `Fix`, R for `Restart`; S for `Save`; E for `Edits`; Q for quitting the program.
-* Tooltips: when you move the cursor over a button , the system will display the tooltip of the button.
+* Tooltips: when you move the cursor over a button, the system will display the tooltip of the button.
 
 
 ## Model Zoo:
-Download the theano DCGAN model (e.g. outdoor_64). Before using our system, please check out the random real images vs. DCGAN generated samples to see which kind of images that a model can produce.
+Download the theano DCGAN model (e.g., outdoor_64). Before using our system, please check out the random real images vs. DCGAN generated samples to see which kind of images that a model can produce.
 
 ``` bash
 bash ./models/scripts/download_dcgan_model.sh outdoor_64
 ```
-* [ourdoor_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/outdoor_64.dcgan_theano) (64x64): trained on 150K landscape images from MIT [Places](http://places.csail.mit.edu/) dataset [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/outdoor_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/outdoor_64_dcgan.png)].
-* [church_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/church_64.dcgan_theano) (64x64): trained on 126k church images from the [LSUN](http://lsun.cs.princeton.edu/2016/) challenge [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/church_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/church_64_dcgan.png)].
-* [handbag_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/handbag_64.dcgan_theano) (64x64): trained on 137K handbag images downloaded from Amazon [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_dcgan.png)].
-* [shoes_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/shoes_64.dcgan_theano) (64x64): trained on 50K shoes images collected by [Yu and Grauman](http://vision.cs.utexas.edu/projects/finegrained/utzap50k/) [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_dcgan.png)].
-* [hed_shoes_64.dcgan_theano](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/models/theano_dcgan/hed_shoes_64.dcgan_theano) (64x64): trained on 50K shoes sketches (computed by [HED](https://github.com/s9xie/hed)) [[Real](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/hed_shoes_64_real.png) vs. [DCGAN](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/hed_shoes_64_dcgan.png)]. (Use this model with `--shadow` flag)
+* [ourdoor_64.dcgan_theano](http://efrosgans.eecs.berkeley.edu/iGAN/models/theano_dcgan/outdoor_64.dcgan_theano) (64x64): trained on 150K landscape images from MIT [Places](http://places.csail.mit.edu/) dataset [[Real](http://efrosgans.eecs.berkeley.edu/iGAN/samples/outdoor_64_real.png) vs. [DCGAN](http://efrosgans.eecs.berkeley.edu/iGAN/samples/outdoor_64_dcgan.png)].
+* [church_64.dcgan_theano](http://efrosgans.eecs.berkeley.edu/iGAN/models/theano_dcgan/church_64.dcgan_theano) (64x64): trained on 126k church images from the [LSUN](http://lsun.cs.princeton.edu/2016/) challenge [[Real](http://efrosgans.eecs.berkeley.edu/iGAN/samples/church_64_real.png) vs. [DCGAN](http://efrosgans.eecs.berkeley.edu/iGAN/samples/church_64_dcgan.png)].
+* [handbag_64.dcgan_theano](http://efrosgans.eecs.berkeley.edu/iGAN/models/theano_dcgan/handbag_64.dcgan_theano) (64x64): trained on 137K handbag images downloaded from Amazon [[Real](http://efrosgans.eecs.berkeley.edu/iGAN/samples/handbag_64_real.png) vs. [DCGAN](http://efrosgans.eecs.berkeley.edu/iGAN/samples/handbag_64_dcgan.png)].
+* [shoes_64.dcgan_theano](http://efrosgans.eecs.berkeley.edu/iGAN/models/theano_dcgan/shoes_64.dcgan_theano) (64x64): trained on 50K shoes images collected by [Yu and Grauman](http://vision.cs.utexas.edu/projects/finegrained/utzap50k/) [[Real](http://efrosgans.eecs.berkeley.edu/iGAN/samples/shoes_64_real.png) vs. [DCGAN](http://efrosgans.eecs.berkeley.edu/iGAN/samples/shoes_64_dcgan.png)].
+* [hed_shoes_64.dcgan_theano](http://efrosgans.eecs.berkeley.edu/iGAN/models/theano_dcgan/hed_shoes_64.dcgan_theano) (64x64): trained on 50K shoes sketches (computed by [HED](https://github.com/s9xie/hed)) [[Real](http://efrosgans.eecs.berkeley.edu/iGAN/samples/hed_shoes_64_real.png) vs. [DCGAN](http://efrosgans.eecs.berkeley.edu/iGAN/samples/hed_shoes_64_dcgan.png)]. (Use this model with `--shadow` flag)
 
 We provide a simple script to generate samples from a pre-trained DCGAN model. You can run this script to test if Theano, CUDA, cuDNN are configured properly before running our interface.
 ```bash
@@ -120,11 +120,11 @@ THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python generate_s
 
 ## Command line arguments:
 Type `python iGAN_main.py --help` for a complete list of the arguments. Here we discuss some important arguments:
-* `--model_name`: the name of the model (e.g. outdoor_64, shoes_64, etc.)
+* `--model_name`: the name of the model (e.g., outdoor_64, shoes_64, etc.)
 * `--model_type`: currently only supports dcgan_theano.
 * `--model_file`: the file that stores the generative model; If not specified, `model_file='./models/%s.%s' % (model_name, model_type)`
 * `--top_k`: the number of the candidate results being displayed
-* `--average`: show average image in the main window. Inspired by [AverageExplorer](https://people.eecs.berkeley.edu/~junyanz/projects/averageExplorer/), average image is a weighted average of multiple generated results, with the weights reflecting user-indicated importance. You can switch between average mode and normal mode by press `A`.
+* `--average`: show an average image in the main window. Inspired by [AverageExplorer](https://people.eecs.berkeley.edu/~junyanz/projects/averageExplorer/), average image is a weighted average of multiple generated results, with the weights reflecting user-indicated importance. You can switch between average mode and normal mode by press `A`.
 * `--shadow`: We build a sketching assistance system for guiding the freeform drawing of objects inspired by [ShadowDraw](http://vision.cs.utexas.edu/projects/shadowdraw/shadowdraw.html)
 To use the interface, download the model `hed_shoes_64` and run the following script
 ```bash
@@ -142,7 +142,7 @@ We provide a script to project an image into latent space (i.e. `x->z`):
 ```bash
 bash models/scripts/download_alexnet.sh conv4
 ```
-* Run the following script with a model and an input image. (e.g. model: `shoes_64.dcgan_theano`, and input image `./pics/shoes_test.png`)
+* Run the following script with a model and an input image. (e.g., model: `shoes_64.dcgan_theano`, and input image `./pics/shoes_test.png`)
 ```bash
 THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_predict.py --model_name shoes_64 --input_image ./pics/shoes_test.png --solver cnn_opt
 ```
@@ -167,8 +167,8 @@ THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_scrip
 * ~~Add the script for projecting an image to the latent vector `z`.~~
 * ~~Add a standalone script without UI.~~
 * Add 128x128 models.
-* Support other deep learning frameworks (e.g. Tensorflow).
-* Support other deep generative models (e.g. variational autoencoder).
+* Support other deep learning frameworks (e.g., Tensorflow).
+* Support other deep generative models (e.g., variational autoencoder).
 * Support image morphing mode.
 * Support image editing mode.
 
@@ -187,5 +187,5 @@ If you love cats, and love reading cool graphics, vision, and learning papers, p
 [[Github]](https://github.com/junyanz/CatPapers) [[Webpage]](http://people.eecs.berkeley.edu/~junyanz/cat/cat_papers.html)
 
 ## Acknowledgement
-* We modified the DCGAN [code](https://github.com/Newmu/dcgan_code) in our package. Thanks the authors for sharing the code. Please cite the original [DCGAN](https://arxiv.org/abs/1511.06434) paper if you use their models.
-* This work was supported, in part, by funding from Adobe, eBay and Intel, as well as a hardware grant from NVIDIA. J.-Y. Zhu is supported by Facebook Graduate Fellowship.
+* We modified the DCGAN [code](https://github.com/Newmu/dcgan_code) in our package. Thanks to the authors for sharing the code. Please cite the original [DCGAN](https://arxiv.org/abs/1511.06434) paper if you use their models.
+* This work was supported, in part, by funding from Adobe, eBay, and Intel, as well as a hardware grant from NVIDIA. J.-Y. Zhu is supported by Facebook Graduate Fellowship.
