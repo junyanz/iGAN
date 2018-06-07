@@ -23,9 +23,7 @@ Given a few user strokes, our system could produce photo-realistic samples that 
 * An intelligent drawing interface for automatically generating images inspired by the color and shape of the brush strokes.
 * An interactive visual debugging tool for understanding and visualizing deep generative models. By interacting with the generative model, a developer can understand what visual content the model can produce, as well as the limitation of the model.
 
-Please cite our paper if you find this code useful in your research.
-
-Contact: Jun-Yan Zhu (junyanz@berkeley.edu)
+Please cite our paper if you find this code useful in your research. (Contact: Jun-Yan Zhu, junyanz at mit dot edu)
 
 ## Getting started
 * Install the python libraries. (See `Requirements`).
