@@ -26,7 +26,7 @@ Given a few user strokes, our system could produce photo-realistic samples that 
 Please cite our paper if you find this code useful in your research. (Contact: Jun-Yan Zhu, junyanz at mit dot edu)
 
 ## Getting started
-* Install the python libraries. (See `Requirements`).
+* Install the python libraries. (See [Requirements](https://github.com/junyanz/iGAN#requirements)).
 * Download the code from GitHub:
 ```bash
 git clone https://github.com/junyanz/iGAN
