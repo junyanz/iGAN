@@ -1,10 +1,9 @@
 ## iGAN: Interactive Image Generation via Generative Adversarial Networks
-[[Project]](http://efrosgans.eecs.berkeley.edu/iGAN/) [[Youtube]](https://youtu.be/9c4z6YsBGQ0)   [[Paper]](https://arxiv.org/abs/1609.03552)  
-A research prototype developed by UC Berkeley and Adobe CTL.  
+[Project](http://efrosgans.eecs.berkeley.edu/iGAN/) |  [Youtube](https://youtu.be/9c4z6YsBGQ0) |  [Paper](https://arxiv.org/abs/1609.03552)  
 
-Latest development:  
+Recent projects:  
 [[pix2pix]](https://github.com/phillipi/pix2pix): Torch implementation for learning a mapping from input images to output images.  
-[[CycleGAN]](https://github.com/junyanz/CycleGAN): Torch implementation for learning an image-to-image translation (i.e. pix2pix) without input-output pairs.  
+[[CycleGAN]](https://github.com/junyanz/CycleGAN): Torch implementation for learning an image-to-image translation (i.e., pix2pix) without input-output pairs.  
 [[pytorch-CycleGAN-and-pix2pix]](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix): PyTorch implementation for both unpaired and paired image-to-image translation.
 
 
@@ -86,7 +85,7 @@ See [[Youtube]](https://youtu.be/9c4z6YsBGQ0?t=2m18s) at 2:18s for the interacti
 * Drawing Pad: This is the main window of our interface. A user can apply different edits via our brush tools, and the system will display the generated image. Check/Uncheck `Edits` button to display/hide user edits.  
 * Candidate Results: a display showing thumbnails of all the candidate results (e.g., different modes) that fits the user edits. A user can click a mode (highlighted by a green rectangle), and the drawing pad will show this result.
 * Brush Tools:  `Coloring Brush` for changing the color of a specific region; `Sketching brush` for outlining the shape. `Warping brush` for modifying the shape more explicitly.
-* Slider Bar: drag the slider bar to explore the interpolation sequence between the initial result (i.e. randomly generated image) and the current result (e.g., image that satisfies the user edits).
+* Slider Bar: drag the slider bar to explore the interpolation sequence between the initial result (i.e., randomly generated image) and the current result (e.g., image that satisfies the user edits).
 * Control Panel: `Play`: play the interpolation sequence; `Fix`: use the current result as additional constraints for further editing  `Restart`: restart the system; `Save`: save the result to a webpage. `Edits`: Check the box if you would like to show the edits on top of the generated image.
 
 
@@ -99,7 +98,7 @@ See [[Youtube]](https://youtu.be/9c4z6YsBGQ0?t=2m18s) at 2:18s for the interacti
 
 
 ## Model Zoo:
-Download the theano DCGAN model (e.g., outdoor_64). Before using our system, please check out the random real images vs. DCGAN generated samples to see which kind of images that a model can produce.
+Download the Theano DCGAN model (e.g., outdoor_64). Before using our system, please check out the random real images vs. DCGAN generated samples to see which kind of images that a model can produce.
 
 ``` bash
 bash ./models/scripts/download_dcgan_model.sh outdoor_64
@@ -135,7 +134,7 @@ See more details [here](./train_dcgan/README.md)
 ## Projecting an Image onto Latent Space
 <img src='pics/predict.jpg' width=800>
 
-We provide a script to project an image into latent space (i.e. `x->z`):
+We provide a script to project an image into latent space (i.e., `x->z`):
 * Download the pre-trained AlexNet model (`conv4`):
 ```bash
 bash models/scripts/download_alexnet.sh conv4
@@ -150,7 +149,7 @@ THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_predi
 ## Script without UI
 <img src='pics/script_result.png' width=1000>
 
-We also provide a standalone script that should work without UI. Given user constraints (i.e. a color map, a color mask and an edge map), the script generates multiple images that mostly satisfy the user constraints. See `python iGAN_script.py --help` for more details.
+We also provide a standalone script that should work without UI. Given user constraints (i.e., a color map, a color mask, and an edge map), the script generates multiple images that mostly satisfy the user constraints. See `python iGAN_script.py --help` for more details.
 ```bash
 THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_script.py --model_name outdoor_64
 ```
@@ -171,5 +170,5 @@ If you love cats, and love reading cool graphics, vision, and learning papers, p
 [[Github]](https://github.com/junyanz/CatPapers) [[Webpage]](http://people.eecs.berkeley.edu/~junyanz/cat/cat_papers.html)
 
 ## Acknowledgement
-* We modified the DCGAN [code](https://github.com/Newmu/dcgan_code) in our package. Thanks to the authors for sharing the code. Please cite the original [DCGAN](https://arxiv.org/abs/1511.06434) paper if you use their models.
+* We modified the DCGAN [code](https://github.com/Newmu/dcgan_code) in our package. Please cite the original [DCGAN](https://arxiv.org/abs/1511.06434) paper if you use their models.
 * This work was supported, in part, by funding from Adobe, eBay, and Intel, as well as a hardware grant from NVIDIA. J.-Y. Zhu is supported by Facebook Graduate Fellowship.
