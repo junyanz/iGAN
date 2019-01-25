@@ -4,14 +4,14 @@ Download our hdf5 datasets (e.g. outdoor_64). The script will first download out
 ``` bash
 bash ./datasets/scripts/download_hdf5_dataset.sh outdoor_64
 ```
-* Outdoor natural images: [ourdoor_64.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/outdoor_64.zip) (1.4G), [outdoor_128.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/outdoor_128.zip) (5.5G), 150K landscape images from MIT [Places](http://places.csail.mit.edu/) dataset ([samples](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/outdoor_64_real.png)).
-* Outdoor church images: [church_64.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/church_64.zip) (1.3G), [church_128.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/church_128.zip) (4.6G), 126k church images from the [LSUN](http://lsun.cs.princeton.edu/2016/) challenge ([samples](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/church_64_real.png)).
-* Shoes images: [shoes_64.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/shoes_64.zip) (260MB), [shoes_128.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/shoes_128.zip) (922MB), 50K shoes images collected by [Yu and Grauman](http://vision.cs.utexas.edu/projects/finegrained/utzap50k/) ([samples](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/shoes_64_real.png)).
-* Handbag images:  [handbag_64.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/handbag_64.zip) (774MB), [handbag_128.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/handbag_128.zip) (2.8G), 137K handbag images downloaded from Amazon ([samples](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/handbag_64_real.png)).
+* Outdoor natural images: [ourdoor_64.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/outdoor_64.zip) (1.4G), [outdoor_128.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/outdoor_128.zip) (5.5G), 150K landscape images from MIT [Places](http://places.csail.mit.edu/) dataset ([samples](http://efrosgans.eecs.berkeley.edu/iGAN/samples/outdoor_64_real.png)).
+* Outdoor church images: [church_64.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/church_64.zip) (1.3G), [church_128.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/church_128.zip) (4.6G), 126k church images from the [LSUN](http://lsun.cs.princeton.edu/2016/) challenge ([samples](http://efrosgans.eecs.berkeley.edu/iGAN/samples/church_64_real.png)).
+* Shoes images: [shoes_64.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/shoes_64.zip) (260MB), [shoes_128.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/shoes_128.zip) (922MB), 50K shoes images collected by [Yu and Grauman](http://vision.cs.utexas.edu/projects/finegrained/utzap50k/) ([samples](http://efrosgans.eecs.berkeley.edu/iGAN/samples/shoes_64_real.png)).
+* Handbag images:  [handbag_64.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/handbag_64.zip) (774MB), [handbag_128.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/handbag_128.zip) (2.8G), 137K handbag images downloaded from Amazon ([samples](http://efrosgans.eecs.berkeley.edu/iGAN/samples/handbag_64_real.png)).
 
 ### Sketch datasets
 Download the sketch datasets (e.g. sketch_shoes_64)
-* Shoes sketches: [sketch_shoes_64.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/sketch_shoes_64.zip) (76MB), [sketch_shoes_128.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/sketch_shoes_128.zip) (278MB), [sketch_shoes_64.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/hed_shoes_64.zip) (69MB), [sketch_shoes_128.hdf5](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/datasets/hed_shoes_128.zip) (244MB), 50K shoes sketches collected by [Yu and Grauman](http://vision.cs.utexas.edu/projects/finegrained/utzap50k/) and filtered by Photoshop sketch filter or [HED](https://github.com/s9xie/hed) edge detection.  ([Photoshop sketch samples](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/sketch_shoes_64_real.png), [HED samples](https://people.eecs.berkeley.edu/~junyanz/projects/gvm/samples/hed_shoes_64_real.png)).
+* Shoes sketches: [sketch_shoes_64.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/sketch_shoes_64.zip) (76MB), [sketch_shoes_128.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/sketch_shoes_128.zip) (278MB), [sketch_shoes_64.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/hed_shoes_64.zip) (69MB), [sketch_shoes_128.hdf5](http://efrosgans.eecs.berkeley.edu/iGAN/datasets/hed_shoes_128.zip) (244MB), 50K shoes sketches collected by [Yu and Grauman](http://vision.cs.utexas.edu/projects/finegrained/utzap50k/) and filtered by Photoshop sketch filter or [HED](https://github.com/s9xie/hed) edge detection.  ([Photoshop sketch samples](http://efrosgans.eecs.berkeley.edu/iGAN/samples/sketch_shoes_64_real.png), [HED samples](http://efrosgans.eecs.berkeley.edu/iGAN/samples/hed_shoes_64_real.png)).
 
 
 ## Train a DCGAN model
@@ -63,22 +63,6 @@ Download the sketch datasets (e.g. sketch_shoes_64)
   ```bash
   python create_hdf5.py --dataset_dir YOUR_OWN_FOLDER --width 64 --mode dir --channel 3 --hdf5_file images.hdf5
   ```
-
-<!-- ## Reconstructing an Image:
-Install [Lasagne](https://github.com/Lasagne/Lasagne)
-```bash
-sudo pip install --upgrade --no-deps git+git://github.com/Lasagne/Lasagne.git
-```
-Download AlexNet model (e.g. conv4):
-```bash
-bash models/scripts/download_alexnet.sh conv4
-``` -->
-
-
-<!-- ## Training the predictive network (`x->z`) on your own dataset -->
-
-
-<!-- ## Train a DCGAN model on your own dataset -->
 
 ## Train a generative model (e.g. VAE) based on Theano
 
