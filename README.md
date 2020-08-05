@@ -12,7 +12,7 @@ Recent projects:
 ## Overview
 iGAN (aka. interactive GAN) is the author's implementation of interactive image generation interface described in:  
 "Generative Visual Manipulation on the Natural Image Manifold"   
-[Jun-Yan Zhu](https://people.eecs.berkeley.edu/~junyanz/), [Philipp Krähenbühl](http://www.philkr.net/), [Eli Shechtman](https://research.adobe.com/person/eli-shechtman/), [Alexei A. Efros](https://people.eecs.berkeley.edu/~efros/)    
+[Jun-Yan Zhu](https://www.cs.cmu.edu/~junyanz/), [Philipp Krähenbühl](http://www.philkr.net/), [Eli Shechtman](https://research.adobe.com/person/eli-shechtman/), [Alexei A. Efros](https://people.eecs.berkeley.edu/~efros/)    
 In European Conference on Computer Vision (ECCV) 2016
 
 <img src='pics/demo_teaser.jpg' width=800>
@@ -121,7 +121,7 @@ Type `python iGAN_main.py --help` for a complete list of the arguments. Here we 
 * `--model_type`: currently only supports dcgan_theano.
 * `--model_file`: the file that stores the generative model; If not specified, `model_file='./models/%s.%s' % (model_name, model_type)`
 * `--top_k`: the number of the candidate results being displayed
-* `--average`: show an average image in the main window. Inspired by [AverageExplorer](https://people.eecs.berkeley.edu/~junyanz/projects/averageExplorer/), average image is a weighted average of multiple generated results, with the weights reflecting user-indicated importance. You can switch between average mode and normal mode by press `A`.
+* `--average`: show an average image in the main window. Inspired by [AverageExplorer](https://www.cs.cmu.edu/~junyanz/projects/averageExplorer/), average image is a weighted average of multiple generated results, with the weights reflecting user-indicated importance. You can switch between average mode and normal mode by press `A`.
 * `--shadow`: We build a sketching assistance system for guiding the freeform drawing of objects inspired by [ShadowDraw](http://vision.cs.utexas.edu/projects/shadowdraw/shadowdraw.html)
 To use the interface, download the model `hed_shoes_64` and run the following script
 ```bash
@@ -167,7 +167,7 @@ THEANO_FLAGS='device=gpu0, floatX=float32, nvcc.fastmath=True' python iGAN_scrip
 
 ## Cat Paper Collection
 If you love cats, and love reading cool graphics, vision, and learning papers, please check out our Cat Paper Collection:  
-[[Github]](https://github.com/junyanz/CatPapers) [[Webpage]](http://people.eecs.berkeley.edu/~junyanz/cat/cat_papers.html)
+[[Github]](https://github.com/junyanz/CatPapers) [[Webpage]](https://www.cs.cmu.edu/~junyanz/cat/cat_papers.html)
 
 ## Acknowledgement
 * We modified the DCGAN [code](https://github.com/Newmu/dcgan_code) in our package. Please cite the original [DCGAN](https://arxiv.org/abs/1511.06434) paper if you use their models.
